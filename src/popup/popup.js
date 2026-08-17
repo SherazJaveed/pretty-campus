@@ -1,13 +1,13 @@
-﻿// Pretty Campus - Popup Logic
+﻿// Pretty Campus - Popup Logic (Final Fix)
 document.addEventListener('DOMContentLoaded', function() {
 
-  const darkToggle = document.getElementById('darkToggle');
-  const themeCards = document.querySelectorAll('.theme-card');
+  var darkToggle = document.getElementById('darkToggle');
+  var themeCards = document.querySelectorAll('.theme-card');
 
   // Load saved settings
   chrome.storage.local.get(['darkMode', 'darkTheme'], function(data) {
     darkToggle.checked = data.darkMode || false;
-    const activeTheme = data.darkTheme || 'midnight';
+    var activeTheme = data.darkTheme || 'midnight';
     
     themeCards.forEach(function(card) {
       card.classList.remove('active');
@@ -17,24 +17,43 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  // Send message safely using callback style
+  function sendToTab(message) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+      if (!tabs[0]) return;
+      var tabId = tabs[0].id;
+
+      // First try injecting CSS and JS directly
+      chrome.scripting.insertCSS({
+        target: { tabId: tabId },
+        files: ['src/content/dark.css']
+      }, function() { if (chrome.runtime.lastError) {} });
+
+      chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        files: ['src/content/content.js']
+      }, function() {
+        if (chrome.runtime.lastError) {}
+        // After injection, send message with slight delay
+        setTimeout(function() {
+          chrome.tabs.sendMessage(tabId, message, function(response) {
+            if (chrome.runtime.lastError) {
+              console.log('Pretty Campus: Page will apply changes on next reload');
+            }
+          });
+        }, 200);
+      });
+    });
+  }
+
   // Toggle dark mode
   darkToggle.addEventListener('change', function() {
-    const enabled = darkToggle.checked;
-    const activeCard = document.querySelector('.theme-card.active');
-    const theme = activeCard ? activeCard.dataset.theme : 'midnight';
+    var enabled = darkToggle.checked;
+    var activeCard = document.querySelector('.theme-card.active');
+    var theme = activeCard ? activeCard.dataset.theme : 'midnight';
 
     chrome.storage.local.set({ darkMode: enabled, darkTheme: theme });
-
-    // Send message to content script
-    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-      if (tabs[0]) {
-        chrome.tabs.sendMessage(tabs[0].id, {
-          action: 'toggleDark',
-          enabled: enabled,
-          theme: theme
-        });
-      }
-    });
+    sendToTab({ action: 'toggleDark', enabled: enabled, theme: theme });
   });
 
   // Theme selection
@@ -43,18 +62,11 @@ document.addEventListener('DOMContentLoaded', function() {
       themeCards.forEach(function(c) { c.classList.remove('active'); });
       card.classList.add('active');
 
-      const theme = card.dataset.theme;
+      var theme = card.dataset.theme;
       chrome.storage.local.set({ darkTheme: theme });
 
       if (darkToggle.checked) {
-        chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-          if (tabs[0]) {
-            chrome.tabs.sendMessage(tabs[0].id, {
-              action: 'changeTheme',
-              theme: theme
-            });
-          }
-        });
+        sendToTab({ action: 'changeTheme', theme: theme });
       }
     });
   });
