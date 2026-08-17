@@ -1,0 +1,32 @@
+﻿{
+  "manifest_version": 3,
+  "name": "Pretty Campus - Canvas Dark Mode & GPA",
+  "version": "1.0.0",
+  "description": "All-in-one Canvas LMS extension: dark mode, GPA calculator, grade predictions, achievement badges, study planner & university themes.",
+  "permissions": ["storage", "alarms"],
+  "host_permissions": ["https://*.instructure.com/*"],
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "src/assets/icons/icon-16.png",
+      "48": "src/assets/icons/icon-48.png",
+      "128": "src/assets/icons/icon-128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.instructure.com/*"],
+      "css": ["src/content/dark.css"],
+      "js": ["src/content/content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    "service_worker": "src/background/background.js"
+  },
+  "icons": {
+    "16": "src/assets/icons/icon-16.png",
+    "48": "src/assets/icons/icon-48.png",
+    "128": "src/assets/icons/icon-128.png"
+  }
+}

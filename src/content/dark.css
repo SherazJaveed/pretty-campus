@@ -1,0 +1,172 @@
+﻿/* ========================================
+   PRETTY CAMPUS - Dark Mode Engine v2
+   Works on ALL Canvas/Instructure pages
+   ======================================== */
+
+/* ----- BASE DARK STYLES (all themes share these) ----- */
+[class*="pc-dark-"] * {
+  border-color: #3D3560 !important;
+}
+
+[class*="pc-dark-"] body,
+[class*="pc-dark-"] html {
+  background-color: var(--pc-bg) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] div,
+[class*="pc-dark-"] main,
+[class*="pc-dark-"] section,
+[class*="pc-dark-"] article,
+[class*="pc-dark-"] aside,
+[class*="pc-dark-"] header,
+[class*="pc-dark-"] footer,
+[class*="pc-dark-"] nav {
+  background-color: inherit !important;
+  color: inherit !important;
+}
+
+[class*="pc-dark-"] h1, [class*="pc-dark-"] h2,
+[class*="pc-dark-"] h3, [class*="pc-dark-"] h4,
+[class*="pc-dark-"] h5, [class*="pc-dark-"] h6 {
+  color: #F4F4F5 !important;
+}
+
+[class*="pc-dark-"] p, [class*="pc-dark-"] span,
+[class*="pc-dark-"] label, [class*="pc-dark-"] li,
+[class*="pc-dark-"] td, [class*="pc-dark-"] th {
+  color: #D4D4D8 !important;
+}
+
+[class*="pc-dark-"] a {
+  color: #A78BFA !important;
+}
+
+[class*="pc-dark-"] a:hover {
+  color: #C4B5FD !important;
+}
+
+[class*="pc-dark-"] input,
+[class*="pc-dark-"] textarea,
+[class*="pc-dark-"] select {
+  background-color: var(--pc-card) !important;
+  color: #E4E4E7 !important;
+  border-color: #3D3560 !important;
+}
+
+[class*="pc-dark-"] button,
+[class*="pc-dark-"] .btn,
+[class*="pc-dark-"] input[type="submit"],
+[class*="pc-dark-"] input[type="button"] {
+  background-color: #7C3AED !important;
+  color: #FFFFFF !important;
+  border-color: #6D28D9 !important;
+}
+
+[class*="pc-dark-"] img {
+  opacity: 0.92;
+}
+
+/* ----- AMOLED BLACK ----- */
+.pc-dark-amoled { --pc-bg: #000000; --pc-card: #111111; --pc-text: #E4E4E7; }
+
+/* ----- MIDNIGHT VIOLET ----- */
+.pc-dark-midnight { --pc-bg: #1E1B2E; --pc-card: #2D2640; --pc-text: #E4E4E7; }
+
+/* ----- WARM DARK ----- */
+.pc-dark-warm { --pc-bg: #1C1917; --pc-card: #292524; --pc-text: #E7E5E4; }
+
+/* ----- Canvas Specific Elements ----- */
+[class*="pc-dark-"] #application,
+[class*="pc-dark-"] #wrapper,
+[class*="pc-dark-"] #content {
+  background-color: var(--pc-bg) !important;
+}
+
+[class*="pc-dark-"] .ic-app-header,
+[class*="pc-dark-"] .ic-app-header__main-navigation {
+  background-color: var(--pc-card) !important;
+}
+
+[class*="pc-dark-"] .ic-DashboardCard {
+  background-color: var(--pc-card) !important;
+}
+
+[class*="pc-dark-"] .ic-app-header__menu-list-item.ic-app-header__menu-list-item--active .ic-app-header__menu-list-link {
+  background-color: #7C3AED !important;
+}
+
+[class*="pc-dark-"] #right-side {
+  background-color: transparent !important;
+}
+
+[class*="pc-dark-"] table th {
+  background-color: var(--pc-card) !important;
+}
+
+[class*="pc-dark-"] tr:nth-child(even) td {
+  background-color: rgba(124, 58, 237, 0.05) !important;
+}
+
+[class*="pc-dark-"] .ic-notification,
+[class*="pc-dark-"] .alert,
+[class*="pc-dark-"] .flashalert-message {
+  background-color: var(--pc-card) !important;
+  color: #E4E4E7 !important;
+}
+
+/* Login page specific */
+[class*="pc-dark-"] .ic-Login,
+[class*="pc-dark-"] .ic-Login-header,
+[class*="pc-dark-"] .ic-Login__body {
+  background-color: var(--pc-bg) !important;
+}
+
+/* Pretty Campus Badge */
+.pc-badge {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background: #7C3AED;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  z-index: 99999;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(124, 58, 237, 0.4);
+  transition: all 0.2s ease;
+}
+
+.pc-badge:hover {
+  background: #6D28D9;
+  transform: scale(1.05);
+}
+
+/* Fix: Instructure logo and dark images on dark backgrounds */
+[class*="pc-dark-"] svg,
+[class*="pc-dark-"] svg path {
+  fill: #E4E4E7 !important;
+}
+
+[class*="pc-dark-"] .ic-Login h1,
+[class*="pc-dark-"] .ic-Login h2,
+[class*="pc-dark-"] .ic-Login h3 {
+  color: #F4F4F5 !important;
+}
+
+/* Force all dark-colored text to be light */
+[class*="pc-dark-"] [style*="color: rgb(0"],
+[class*="pc-dark-"] [style*="color: #0"],
+[class*="pc-dark-"] [style*="color: #1"],
+[class*="pc-dark-"] [style*="color: #2"],
+[class*="pc-dark-"] [style*="color: #3"] {
+  color: #E4E4E7 !important;
+}
+
+/* Fix dark logos */
+[class*="pc-dark-"] img[src*="logo"],
+[class*="pc-dark-"] img[src*="brand"] {
+  filter: brightness(2) !important;
+}
