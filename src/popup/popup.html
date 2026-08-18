@@ -6,198 +6,91 @@
   <title>Pretty Campus</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    body {
-      width: 320px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #FAFAF9;
-      color: #1C1917;
-    }
-
-    .header {
-      background: linear-gradient(135deg, #7C3AED, #6D28D9);
-      padding: 20px;
-      text-align: center;
-    }
-
-    .header h1 {
-      color: white;
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .header p {
-      color: rgba(255,255,255,0.8);
-      font-size: 12px;
-      margin-top: 4px;
-    }
-
-    .section {
-      padding: 16px;
-      border-bottom: 1px solid #E7E5E4;
-    }
-
-    .section-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #78716C;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .toggle-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .toggle-row label {
-      font-size: 14px;
-      color: #1C1917;
-    }
-
-    .toggle {
-      position: relative;
-      width: 44px;
-      height: 24px;
-    }
-
-    .toggle input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .toggle-slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #D6D3D1;
-      border-radius: 24px;
-      transition: 0.3s;
-    }
-
-    .toggle-slider:before {
-      content: "";
-      position: absolute;
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      border-radius: 50%;
-      transition: 0.3s;
-    }
-
-    .toggle input:checked + .toggle-slider {
-      background-color: #7C3AED;
-    }
-
-    .toggle input:checked + .toggle-slider:before {
-      transform: translateX(20px);
-    }
-
-    .theme-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .theme-card {
-      padding: 12px 8px;
-      border-radius: 10px;
-      text-align: center;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: all 0.2s;
-      font-size: 11px;
-      font-weight: 500;
-    }
-
-    .theme-card:hover {
-      transform: scale(1.03);
-    }
-
-    .theme-card.active {
-      border-color: #7C3AED;
-      box-shadow: 0 0 0 1px #7C3AED;
-    }
-
-    .theme-amoled {
-      background: #000;
-      color: #fff;
-    }
-
-    .theme-midnight {
-      background: #1E1B2E;
-      color: #A78BFA;
-    }
-
-    .theme-warm {
-      background: #1C1917;
-      color: #FBBF24;
-    }
-
-    .theme-dot {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      margin: 0 auto 6px;
-    }
-
-    .footer {
-      padding: 12px 16px;
-      text-align: center;
-      font-size: 11px;
-      color: #A8A29E;
-    }
-
-    .footer a {
-      color: #7C3AED;
-      text-decoration: none;
-    }
+    body { width: 340px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #FAFAF9; color: #1C1917; }
+    .header { background: linear-gradient(135deg, #7C3AED, #6D28D9); padding: 20px; text-align: center; }
+    .header h1 { color: white; font-size: 18px; font-weight: 600; }
+    .header p { color: rgba(255,255,255,0.8); font-size: 12px; margin-top: 4px; }
+    .section { padding: 16px; border-bottom: 1px solid #E7E5E4; }
+    .section-title { font-size: 12px; font-weight: 600; color: #78716C; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .toggle-row label { font-size: 13px; color: #1C1917; }
+    .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #D6D3D1; border-radius: 24px; transition: 0.3s; }
+    .toggle-slider:before { content: ""; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: 0.3s; }
+    .toggle input:checked + .toggle-slider { background-color: #7C3AED; }
+    .toggle input:checked + .toggle-slider:before { transform: translateX(20px); }
+    .theme-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .theme-card { padding: 10px 6px; border-radius: 8px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; font-size: 11px; font-weight: 500; }
+    .theme-card:hover { transform: scale(1.03); }
+    .theme-card.active { border-color: #7C3AED; box-shadow: 0 0 0 1px #7C3AED; }
+    .theme-amoled { background: #000; color: #fff; }
+    .theme-midnight { background: #1E1B2E; color: #A78BFA; }
+    .theme-warm { background: #1C1917; color: #FBBF24; }
+    .theme-dot { width: 22px; height: 22px; border-radius: 50%; margin: 0 auto 5px; }
+    .schedule-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; padding: 8px; background: #F5F5F4; border-radius: 8px; }
+    .schedule-row select { flex: 1; padding: 6px; border: 1px solid #D6D3D1; border-radius: 6px; font-size: 12px; background: white; }
+    .schedule-label { font-size: 11px; color: #78716C; margin-bottom: 2px; }
+    .shortcut-hint { font-size: 11px; color: #A8A29E; text-align: center; padding: 8px 16px; background: #F5F5F4; border-bottom: 1px solid #E7E5E4; }
+    .shortcut-hint kbd { background: #E7E5E4; padding: 1px 5px; border-radius: 3px; font-family: monospace; font-size: 11px; }
+    .footer { padding: 12px 16px; text-align: center; font-size: 11px; color: #A8A29E; }
+    .footer a { color: #7C3AED; text-decoration: none; }
   </style>
 </head>
 <body>
-
   <div class="header">
     <h1>Pretty Campus</h1>
     <p>Your Canvas, Reimagined</p>
   </div>
-
+  <div class="shortcut-hint">Toggle dark mode: <kbd>Alt</kbd> + <kbd>D</kbd></div>
   <div class="section">
     <div class="section-title">Dark Mode</div>
     <div class="toggle-row">
       <label>Enable Dark Mode</label>
-      <div class="toggle">
-        <input type="checkbox" id="darkToggle">
-        <span class="toggle-slider"></span>
+      <div class="toggle"><input type="checkbox" id="darkToggle"><span class="toggle-slider"></span></div>
+    </div>
+    <div class="toggle-row">
+      <label>Follow System Theme</label>
+      <div class="toggle"><input type="checkbox" id="systemToggle"><span class="toggle-slider"></span></div>
+    </div>
+    <div class="toggle-row">
+      <label>Schedule Dark Mode</label>
+      <div class="toggle"><input type="checkbox" id="scheduleToggle"><span class="toggle-slider"></span></div>
+    </div>
+    <div class="schedule-row" id="scheduleRow" style="display:none;">
+      <div style="flex:1;">
+        <div class="schedule-label">Start</div>
+        <select id="scheduleStart">
+          <option value="17">5 PM</option>
+          <option value="18" selected>6 PM</option>
+          <option value="19">7 PM</option>
+          <option value="20">8 PM</option>
+          <option value="21">9 PM</option>
+        </select>
+      </div>
+      <div style="flex:1;">
+        <div class="schedule-label">End</div>
+        <select id="scheduleEnd">
+          <option value="6">6 AM</option>
+          <option value="7" selected>7 AM</option>
+          <option value="8">8 AM</option>
+          <option value="9">9 AM</option>
+        </select>
       </div>
     </div>
-
     <div class="theme-grid" id="themeGrid">
       <div class="theme-card theme-amoled" data-theme="amoled">
-        <div class="theme-dot" style="background:#000;border:2px solid #333;"></div>
-        AMOLED
+        <div class="theme-dot" style="background:#000;border:2px solid #333;"></div>AMOLED
       </div>
       <div class="theme-card theme-midnight active" data-theme="midnight">
-        <div class="theme-dot" style="background:#1E1B2E;border:2px solid #7C3AED;"></div>
-        Midnight
+        <div class="theme-dot" style="background:#1E1B2E;border:2px solid #7C3AED;"></div>Midnight
       </div>
       <div class="theme-card theme-warm" data-theme="warm">
-        <div class="theme-dot" style="background:#1C1917;border:2px solid #FBBF24;"></div>
-        Warm
+        <div class="theme-dot" style="background:#1C1917;border:2px solid #FBBF24;"></div>Warm
       </div>
     </div>
   </div>
-
-  <div class="footer">
-    Made with care by <a href="https://better-lms.com" target="_blank">Pretty Campus</a>
-  </div>
-
+  <div class="footer">Made with care by <a href="https://better-lms.com" target="_blank">Pretty Campus</a></div>
   <script src="popup.js"></script>
 </body>
 </html>

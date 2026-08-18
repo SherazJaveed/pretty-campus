@@ -1,0 +1,387 @@
+/* ========================================
+   PRETTY CAMPUS - Task Sidebar Styles
+   Progress Rings, Task List, Streak, Confetti
+   ======================================== */
+
+/* Confetti animation */
+@keyframes pcConfetti {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* Sidebar Container */
+#pc-task-sidebar {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #1E1B2E;
+  color: #E4E4E7;
+  width: 320px;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 0;
+  border-left: 1px solid #3D3560;
+}
+
+.pc-sidebar-inner {
+  padding: 16px;
+}
+
+/* Header */
+.pc-sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.pc-sidebar-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #F4F4F5;
+}
+
+.pc-sidebar-streak {
+  font-size: 13px;
+  color: #F59E0B;
+  font-weight: 500;
+  background: rgba(245, 158, 11, 0.1);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+/* Progress Rings */
+.pc-rings-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #2D2640;
+  border-radius: 12px;
+}
+
+.pc-ring-item {
+  text-align: center;
+  width: 60px;
+}
+
+.pc-ring-label {
+  display: block;
+  font-size: 10px;
+  color: #9CA3AF;
+  margin-top: 2px;
+}
+
+.pc-ring-pct {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Stats Bar */
+.pc-stats-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.pc-stat {
+  flex: 1;
+  text-align: center;
+  padding: 6px 4px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.pc-stat-overdue {
+  background: rgba(239, 68, 68, 0.15);
+  color: #FCA5A5;
+}
+
+.pc-stat-today {
+  background: rgba(245, 158, 11, 0.15);
+  color: #FCD34D;
+}
+
+.pc-stat-week {
+  background: rgba(59, 130, 246, 0.15);
+  color: #93C5FD;
+}
+
+/* Controls */
+.pc-controls {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.pc-sort-select,
+.pc-filter-select {
+  flex: 1;
+  padding: 6px 8px;
+  background: #2D2640;
+  color: #E4E4E7;
+  border: 1px solid #3D3560;
+  border-radius: 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.pc-sort-select:focus,
+.pc-filter-select:focus {
+  outline: none;
+  border-color: #7C3AED;
+}
+
+/* Add Task */
+.pc-add-task {
+  text-align: center;
+  padding: 8px;
+  color: #A78BFA;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px dashed #3D3560;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+}
+
+.pc-add-task:hover {
+  background: rgba(124, 58, 237, 0.1);
+  border-color: #7C3AED;
+}
+
+/* Add Task Form */
+.pc-add-form {
+  padding: 10px;
+  background: #2D2640;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.pc-input {
+  width: 100%;
+  padding: 7px 10px;
+  background: #1E1B2E;
+  color: #E4E4E7;
+  border: 1px solid #3D3560;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.pc-input:focus {
+  outline: none;
+  border-color: #7C3AED;
+}
+
+.pc-add-form-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.pc-btn-add {
+  flex: 1;
+  padding: 6px;
+  background: #7C3AED;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pc-btn-add:hover { background: #6D28D9; }
+
+.pc-btn-cancel {
+  flex: 1;
+  padding: 6px;
+  background: #3D3560;
+  color: #D4D4D8;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* Section Title */
+.pc-task-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #78716C;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #2D2640;
+}
+
+.pc-completed-title {
+  cursor: pointer;
+  margin-top: 16px;
+}
+
+.pc-completed-title:hover { color: #A78BFA; }
+
+/* Task Item */
+.pc-task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+
+.pc-task-item:hover {
+  background: rgba(124, 58, 237, 0.08);
+}
+
+.pc-task-check {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #3D3560;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0;
+  color: white;
+}
+
+.pc-task-check:hover {
+  transform: scale(1.15);
+  background: rgba(124, 58, 237, 0.2);
+}
+
+.pc-task-checked {
+  font-size: 12px;
+  color: white;
+}
+
+.pc-task-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pc-task-name {
+  font-size: 13px;
+  color: #E4E4E7;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.pc-task-strikethrough {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.pc-task-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 3px;
+}
+
+.pc-task-course {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.pc-task-points {
+  font-size: 11px;
+  color: #9CA3AF;
+}
+
+.pc-task-due {
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-top: 2px;
+}
+
+.pc-overdue {
+  background: rgba(239, 68, 68, 0.15);
+  color: #FCA5A5;
+}
+
+.pc-urgent {
+  background: rgba(245, 158, 11, 0.15);
+  color: #FCD34D;
+}
+
+.pc-soon {
+  background: rgba(249, 115, 22, 0.1);
+  color: #FDBA74;
+}
+
+.pc-normal {
+  background: rgba(59, 130, 246, 0.1);
+  color: #93C5FD;
+}
+
+.pc-task-done {
+  opacity: 0.6;
+}
+
+.pc-task-empty {
+  text-align: center;
+  padding: 24px 16px;
+  color: #10B981;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Workload */
+.pc-workload {
+  margin-top: 16px;
+  padding: 12px;
+  background: #2D2640;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.pc-workload-title {
+  font-size: 12px;
+  color: #9CA3AF;
+  margin-bottom: 4px;
+}
+
+.pc-workload-hours {
+  font-size: 15px;
+  font-weight: 600;
+  color: #A78BFA;
+}
+
+/* Light mode support */
+body:not([class*="pc-dark-"]) #pc-task-sidebar {
+  background: white;
+  border-color: #E5E7EB;
+  color: #1F2937;
+}
+
+body:not([class*="pc-dark-"]) .pc-sidebar-title { color: #1F2937; }
+body:not([class*="pc-dark-"]) .pc-task-name { color: #1F2937; }
+body:not([class*="pc-dark-"]) .pc-rings-container { background: #F3F4F6; }
+body:not([class*="pc-dark-"]) .pc-stats-bar .pc-stat { background: #F3F4F6; }
+body:not([class*="pc-dark-"]) .pc-sort-select,
+body:not([class*="pc-dark-"]) .pc-filter-select { background: #F9FAFB; color: #1F2937; border-color: #E5E7EB; }
+body:not([class*="pc-dark-"]) .pc-add-form { background: #F9FAFB; }
+body:not([class*="pc-dark-"]) .pc-input { background: white; color: #1F2937; border-color: #E5E7EB; }
+body:not([class*="pc-dark-"]) .pc-workload { background: #F3F4F6; }
+body:not([class*="pc-dark-"]) .pc-task-check { border-color: #D1D5DB; }
+
+/* Scrollbar */
+#pc-task-sidebar::-webkit-scrollbar { width: 6px; }
+#pc-task-sidebar::-webkit-scrollbar-track { background: transparent; }
+#pc-task-sidebar::-webkit-scrollbar-thumb { background: #3D3560; border-radius: 3px; }
+#pc-task-sidebar::-webkit-scrollbar-thumb:hover { background: #7C3AED; }
