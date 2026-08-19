@@ -1,0 +1,128 @@
+/* ========================================
+   PRETTY CAMPUS - Auto-Save Styles
+   ======================================== */
+
+/* Recovery Banner */
+#pc-recovery-banner {
+  background: linear-gradient(135deg, #7C3AED, #6D28D9);
+  padding: 12px 20px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  animation: pcSlideDown 0.3s ease;
+}
+
+@keyframes pcSlideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.pc-recovery-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pc-recovery-icon { font-size: 20px; }
+
+.pc-recovery-text {
+  flex: 1;
+  color: white;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.pc-recovery-btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  transition: opacity 0.2s;
+}
+
+.pc-recovery-btn:hover { opacity: 0.9; }
+
+.pc-recovery-restore {
+  background: white;
+  color: #7C3AED;
+}
+
+.pc-recovery-dismiss {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+/* Save Indicator */
+.pc-save-indicator {
+  position: fixed;
+  bottom: 50px;
+  right: 16px;
+  background: #2D2640;
+  color: #9CA3AF;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  z-index: 99998;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  border: 1px solid #3D3560;
+}
+
+.pc-save-flash {
+  color: #10B981 !important;
+  border-color: #10B981 !important;
+}
+
+.pc-save-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #6B7280;
+  display: inline-block;
+}
+
+.pc-save-dot-active {
+  background: #10B981;
+  animation: pcPulse 1s ease infinite;
+}
+
+@keyframes pcPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Toast */
+.pc-toast {
+  position: fixed;
+  bottom: 90px;
+  right: 16px;
+  background: #10B981;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  z-index: 99999;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+}
+
+.pc-toast-show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Light mode */
+body:not([class*="pc-dark-"]) .pc-save-indicator {
+  background: white;
+  border-color: #E5E7EB;
+  color: #6B7280;
+}
