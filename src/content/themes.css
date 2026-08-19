@@ -1,0 +1,128 @@
+/* ========================================
+   PRETTY CAMPUS - Custom Theme CSS Support
+   Applies CSS variable-based theming
+   ======================================== */
+
+/* Custom dark theme (university + aesthetic dark themes) */
+.pc-theme-custom-dark body,
+.pc-theme-custom-dark #application,
+.pc-theme-custom-dark #wrapper,
+.pc-theme-custom-dark #content {
+  background-color: var(--pc-bg) !important;
+  color: var(--pc-text) !important;
+}
+
+.pc-theme-custom-dark .ic-app-header,
+.pc-theme-custom-dark .ic-app-header__main-navigation {
+  background-color: var(--pc-card) !important;
+}
+
+.pc-theme-custom-dark .ic-DashboardCard {
+  background-color: var(--pc-card) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+.pc-theme-custom-dark a {
+  color: var(--pc-accent) !important;
+}
+
+.pc-theme-custom-dark h1, .pc-theme-custom-dark h2,
+.pc-theme-custom-dark h3, .pc-theme-custom-dark h4 {
+  color: var(--pc-text) !important;
+}
+
+.pc-theme-custom-dark p, .pc-theme-custom-dark span,
+.pc-theme-custom-dark li, .pc-theme-custom-dark td,
+.pc-theme-custom-dark label {
+  color: var(--pc-text) !important;
+}
+
+.pc-theme-custom-dark input,
+.pc-theme-custom-dark textarea,
+.pc-theme-custom-dark select {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: rgba(255,255,255,0.15) !important;
+}
+
+.pc-theme-custom-dark button,
+.pc-theme-custom-dark .btn {
+  background-color: var(--pc-accent) !important;
+  color: white !important;
+}
+
+.pc-theme-custom-dark table, .pc-theme-custom-dark th,
+.pc-theme-custom-dark td {
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+.pc-theme-custom-dark th {
+  background-color: var(--pc-card) !important;
+}
+
+.pc-theme-custom-dark .ic-app-header__menu-list-item--active .ic-app-header__menu-list-link {
+  background-color: var(--pc-accent) !important;
+}
+
+.pc-theme-custom-dark #right-side {
+  background-color: transparent !important;
+}
+
+.pc-theme-custom-dark .alert {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+
+.pc-theme-custom-dark .ic-notification {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+
+/* Secondary accent for university themes (used for highlights) */
+.pc-theme-custom-dark .ic-DashboardCard__header {
+  border-bottom: 3px solid var(--pc-secondary, var(--pc-accent)) !important;
+}
+
+.pc-theme-custom-dark .pc-badge {
+  background: var(--pc-accent) !important;
+}
+
+/* Custom light theme */
+.pc-theme-custom-light body,
+.pc-theme-custom-light #application,
+.pc-theme-custom-light #wrapper,
+.pc-theme-custom-light #content {
+  background-color: var(--pc-bg) !important;
+  color: var(--pc-text) !important;
+}
+
+.pc-theme-custom-light .ic-app-header {
+  background-color: var(--pc-card) !important;
+}
+
+.pc-theme-custom-light .ic-DashboardCard {
+  background-color: white !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+}
+
+.pc-theme-custom-light a {
+  color: var(--pc-accent) !important;
+}
+
+.pc-theme-custom-light .btn {
+  background-color: var(--pc-accent) !important;
+  color: white !important;
+}
+
+.pc-theme-custom-light .ic-app-header__menu-list-item--active .ic-app-header__menu-list-link {
+  background-color: var(--pc-accent) !important;
+}
+
+/* Scrollbar theming */
+.pc-theme-custom-dark ::-webkit-scrollbar-thumb {
+  background: var(--pc-accent) !important;
+}
+
+.pc-theme-custom-dark ::-webkit-scrollbar-track {
+  background: var(--pc-bg) !important;
+}

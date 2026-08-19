@@ -90,3 +90,17 @@
   console.log('Pretty Campus: Ready!');
 
 })();
+
+// Theme test: listen for keyboard shortcut Alt+T to cycle themes
+document.addEventListener('keydown', function(e) {
+  if (e.altKey && e.key === 't') {
+    e.preventDefault();
+    var themes = ['ohio-state','nyu','ucla','stanford','mit','ocean','forest','sunset','rose','lavender','midnight'];
+    var current = window._pcThemeIdx || 0;
+    if (typeof PrettyThemes !== 'undefined') {
+      PrettyThemes.apply(themes[current]);
+      console.log('Theme: ' + themes[current]);
+      window._pcThemeIdx = (current + 1) % themes.length;
+    }
+  }
+});
