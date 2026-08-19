@@ -1,30 +1,41 @@
-﻿/* ========================================
-   PRETTY CAMPUS - GPA Widget (injected into Canvas)
+/* ========================================
+   PRETTY CAMPUS - GPA Widget v2 (Fixed)
+   Handles missing assignments data gracefully
    ======================================== */
 
 (function() {
   'use strict';
 
-  // Wait for PrettyGPA to be available
   function initGPAWidget() {
-    var courses = PrettyGPA.getMockCourses();
+    if (document.getElementById('pc-gpa-widget')) return;
+
+    // Get courses from API or mock
+    if (typeof PrettyAPI !== 'undefined') {
+      PrettyAPI.getCourses(function(err, courses) {
+        if (courses && courses.length > 0) {
+          renderWidget(courses);
+        }
+      });
+    } else if (typeof PrettyGPA !== 'undefined') {
+      renderWidget(PrettyGPA.getMockCourses());
+    }
+  }
+
+  function renderWidget(courses) {
     var gpa = PrettyGPA.calculateGPA(courses);
     var gpaColor = PrettyGPA.getGPAColor(gpa);
 
-    // Create widget container
     var widget = document.createElement('div');
     widget.id = 'pc-gpa-widget';
     widget.innerHTML = buildWidgetHTML(courses, gpa, gpaColor);
-    
-    // Insert into page
+
     var content = document.getElementById('content');
     if (content) {
       content.insertBefore(widget, content.firstChild);
     } else {
-      document.body.appendChild(widget);
+      document.body.insertBefore(widget, document.body.firstChild);
     }
 
-    // Add event listeners
     setupWidgetEvents(courses);
   }
 
@@ -32,16 +43,25 @@
     var coursesHTML = courses.map(function(course) {
       var grade = PrettyGPA.percentToGrade(course.percentage);
       var gradeColor = PrettyGPA.getGradeColor(course.percentage);
-      var trend = PrettyGPA.predictFinal(course.assignments.map(function(a) { return a.score; }));
-      var trendGrade = PrettyGPA.percentToGrade(trend);
-      var trendDir = trend > course.percentage ? '↑' : trend < course.percentage ? '↓' : '→';
-      var trendColor = trend > course.percentage ? '#10B981' : trend < course.percentage ? '#EF4444' : '#F59E0B';
+
+      // Handle missing assignments - use percentage for prediction
+      var trend = course.percentage;
+      var trendGrade = grade;
+      var trendDir = '→';
+      var trendColor = '#F59E0B';
+
+      if (course.assignments && course.assignments.length >= 2) {
+        trend = PrettyGPA.predictFinal(course.assignments.map(function(a) { return a.score; }));
+        trendGrade = PrettyGPA.percentToGrade(trend);
+        trendDir = trend > course.percentage ? '↑' : trend < course.percentage ? '↓' : '→';
+        trendColor = trend > course.percentage ? '#10B981' : trend < course.percentage ? '#EF4444' : '#F59E0B';
+      }
 
       return '<div class="pc-gpa-course">' +
         '<div class="pc-gpa-course-color" style="background:' + course.color + '"></div>' +
         '<div class="pc-gpa-course-info">' +
           '<div class="pc-gpa-course-name">' + course.name + '</div>' +
-          '<div class="pc-gpa-course-title">' + course.title + '</div>' +
+          '<div class="pc-gpa-course-title">' + (course.title || '') + '</div>' +
         '</div>' +
         '<div class="pc-gpa-course-grade" style="color:' + gradeColor + '">' + course.percentage + '% (' + grade + ')</div>' +
         '<div class="pc-gpa-course-trend" style="color:' + trendColor + '" title="Predicted final: ' + trend + '%">' + trendDir + ' ' + trendGrade + '</div>' +
@@ -49,98 +69,66 @@
       '</div>';
     }).join('');
 
-    // Finals calculator
     var finalsHTML = courses.map(function(course) {
-      return '<option value="' + course.id + '" data-grade="' + course.percentage + '">' + course.name + ' — ' + course.title + ' (current: ' + course.percentage + '%)</option>';
+      return '<option value="' + course.id + '" data-grade="' + course.percentage + '">' + course.name + ' — ' + (course.title || '') + ' (current: ' + course.percentage + '%)</option>';
     }).join('');
 
+    var totalCredits = courses.reduce(function(sum, c) { return sum + c.credits; }, 0);
+    var avgPct = courses.reduce(function(sum, c) { return sum + c.percentage; }, 0) / courses.length;
+    var avgGrade = PrettyGPA.percentToGrade(avgPct);
+
     return '<div class="pc-gpa-container">' +
-      
-      // GPA Overview
       '<div class="pc-gpa-overview">' +
         '<div class="pc-gpa-big">' +
           '<div class="pc-gpa-number" style="color:' + gpaColor + '">' + gpa.toFixed(2) + '</div>' +
           '<div class="pc-gpa-label">Semester GPA</div>' +
         '</div>' +
         '<div class="pc-gpa-stats">' +
-          '<div class="pc-gpa-stat">' +
-            '<span class="pc-gpa-stat-value">' + courses.length + '</span>' +
-            '<span class="pc-gpa-stat-label">Courses</span>' +
-          '</div>' +
-          '<div class="pc-gpa-stat">' +
-            '<span class="pc-gpa-stat-value">' + courses.reduce(function(sum, c) { return sum + c.credits; }, 0) + '</span>' +
-            '<span class="pc-gpa-stat-label">Credits</span>' +
-          '</div>' +
-          '<div class="pc-gpa-stat">' +
-            '<span class="pc-gpa-stat-value" style="color:' + gpaColor + '">' + PrettyGPA.percentToGrade(PrettyGPA.calculateGPA(courses) * 25) + '</span>' +
-            '<span class="pc-gpa-stat-label">Average</span>' +
-          '</div>' +
+          '<div class="pc-gpa-stat"><span class="pc-gpa-stat-value">' + courses.length + '</span><span class="pc-gpa-stat-label">Courses</span></div>' +
+          '<div class="pc-gpa-stat"><span class="pc-gpa-stat-value">' + totalCredits + '</span><span class="pc-gpa-stat-label">Credits</span></div>' +
+          '<div class="pc-gpa-stat"><span class="pc-gpa-stat-value" style="color:' + gpaColor + '">' + avgGrade + '</span><span class="pc-gpa-stat-label">Average</span></div>' +
         '</div>' +
       '</div>' +
-
-      // Course List
-      '<div class="pc-gpa-courses-header">' +
-        '<span>Course</span><span>Grade</span><span>Trend</span><span>Credits</span>' +
-      '</div>' +
+      '<div class="pc-gpa-courses-header"><span>Course</span><span>Grade</span><span>Trend</span><span>Credits</span></div>' +
       '<div class="pc-gpa-courses">' + coursesHTML + '</div>' +
-
-      // Finals Calculator
       '<div class="pc-gpa-finals">' +
         '<div class="pc-gpa-finals-title">What Do I Need On My Final?</div>' +
         '<div class="pc-gpa-finals-form">' +
           '<select id="pc-finals-course" class="pc-select">' + finalsHTML + '</select>' +
           '<div class="pc-gpa-finals-row">' +
-            '<div class="pc-gpa-finals-input">' +
-              '<label>I want at least</label>' +
-              '<select id="pc-finals-desired" class="pc-select">' +
-                '<option value="90">A (90%)</option>' +
-                '<option value="80">B (80%)</option>' +
-                '<option value="70">C (70%)</option>' +
-                '<option value="60">D (60%)</option>' +
-              '</select>' +
+            '<div class="pc-gpa-finals-input"><label>I want at least</label>' +
+              '<select id="pc-finals-desired" class="pc-select"><option value="90">A (90%)</option><option value="80">B (80%)</option><option value="70">C (70%)</option><option value="60">D (60%)</option></select>' +
             '</div>' +
-            '<div class="pc-gpa-finals-input">' +
-              '<label>Final is worth</label>' +
-              '<select id="pc-finals-weight" class="pc-select">' +
-                '<option value="10">10%</option>' +
-                '<option value="15">15%</option>' +
-                '<option value="20">20%</option>' +
-                '<option value="25" selected>25%</option>' +
-                '<option value="30">30%</option>' +
-                '<option value="40">40%</option>' +
-                '<option value="50">50%</option>' +
-              '</select>' +
+            '<div class="pc-gpa-finals-input"><label>Final is worth</label>' +
+              '<select id="pc-finals-weight" class="pc-select"><option value="10">10%</option><option value="15">15%</option><option value="20">20%</option><option value="25" selected>25%</option><option value="30">30%</option><option value="40">40%</option><option value="50">50%</option></select>' +
             '</div>' +
             '<button id="pc-finals-calc" class="pc-btn">Calculate</button>' +
           '</div>' +
           '<div id="pc-finals-result" class="pc-gpa-finals-result"></div>' +
         '</div>' +
       '</div>' +
-
-      // Assignment Impact
       '<div class="pc-gpa-impact">' +
         '<div class="pc-gpa-impact-title">Assignment Impact Preview</div>' +
         '<div class="pc-gpa-impact-scenarios" id="pc-impact-scenarios">' +
-          '<div class="pc-impact-hint">Select a course above, then see how your next assignment affects your grade</div>' +
+          '<div class="pc-impact-hint">Click Calculate above to see how your final affects your grade</div>' +
         '</div>' +
       '</div>' +
-
     '</div>';
   }
 
   function setupWidgetEvents(courses) {
-
-    // Finals Calculator
     var calcBtn = document.getElementById('pc-finals-calc');
     if (calcBtn) {
       calcBtn.addEventListener('click', function() {
         var courseSelect = document.getElementById('pc-finals-course');
+        if (!courseSelect) return;
         var currentGrade = parseFloat(courseSelect.options[courseSelect.selectedIndex].dataset.grade);
         var desired = parseFloat(document.getElementById('pc-finals-desired').value);
         var weight = parseFloat(document.getElementById('pc-finals-weight').value);
 
         var needed = PrettyGPA.finalNeeded(currentGrade, desired, weight);
         var resultDiv = document.getElementById('pc-finals-result');
+        if (!resultDiv) return;
         var courseName = courseSelect.options[courseSelect.selectedIndex].text.split(' — ')[0];
 
         if (needed > 100) {
@@ -153,17 +141,7 @@
           resultDiv.innerHTML = '<div class="pc-result-ok" style="border-color:' + color + '">You need <strong style="color:' + color + '">' + needed + '%</strong> on your ' + courseName + ' final — ' + difficulty + '!</div>';
         }
 
-        // Show impact scenarios
         showImpactScenarios(currentGrade, weight);
-      });
-    }
-
-    // Course selection changes impact preview
-    var courseSelect = document.getElementById('pc-finals-course');
-    if (courseSelect) {
-      courseSelect.addEventListener('change', function() {
-        var currentGrade = parseFloat(courseSelect.options[courseSelect.selectedIndex].dataset.grade);
-        showImpactScenarios(currentGrade, parseFloat(document.getElementById('pc-finals-weight').value));
       });
     }
   }
@@ -175,6 +153,9 @@
       { label: 'If you get a C (75%)', score: 75 },
       { label: 'If you skip it (0%)', score: 0 }
     ];
+
+    var container = document.getElementById('pc-impact-scenarios');
+    if (!container) return;
 
     var html = scenarios.map(function(s) {
       var newGrade = PrettyGPA.assignmentImpact(currentGrade, s.score, weight);
@@ -191,12 +172,11 @@
       '</div>';
     }).join('');
 
-    document.getElementById('pc-impact-scenarios').innerHTML = html;
+    container.innerHTML = html;
   }
 
-  // Initialize when DOM is ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initGPAWidget);
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(initGPAWidget, 500); });
   } else {
     setTimeout(initGPAWidget, 500);
   }
