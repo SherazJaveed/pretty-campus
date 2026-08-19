@@ -1,8 +1,8 @@
 ﻿{
   "manifest_version": 3,
   "name": "Pretty Campus - Canvas Dark Mode & GPA",
-  "version": "1.7.0",
-  "description": "All-in-one Canvas LMS extension: dark mode, GPA calculator, grade predictions, achievement badges, auto-save, study planner & 40+ themes.",
+  "version": "1.8.0",
+  "description": "All-in-one Canvas LMS extension: dark mode, GPA calculator, auto-save, Pomodoro timer, achievement badges, study planner & 40+ themes.",
   "permissions": ["storage", "alarms", "activeTab", "scripting"],
   "host_permissions": ["https://*.instructure.com/*", "file:///*"],
   "action": {
@@ -16,8 +16,8 @@
   "content_scripts": [
     {
       "matches": ["https://*.instructure.com/*", "file:///*"],
-      "css": ["src/content/dark.css", "src/content/gpa-widget.css", "src/content/task-sidebar.css", "src/content/achievements.css", "src/content/themes.css", "src/content/command-palette.css", "src/content/auto-save.css"],
-      "js": ["src/content/canvas-api.js", "src/content/gpa-calculator.js", "src/content/gpa-widget.js", "src/content/task-sidebar.js", "src/content/achievements.js", "src/content/themes.js", "src/content/command-palette.js", "src/content/auto-save.js", "src/content/content.js"],
+      "css": ["src/content/dark.css", "src/content/gpa-widget.css", "src/content/task-sidebar.css", "src/content/achievements.css", "src/content/themes.css", "src/content/command-palette.css", "src/content/auto-save.css", "src/content/finals-mode.css"],
+      "js": ["src/content/canvas-api.js", "src/content/gpa-calculator.js", "src/content/gpa-widget.js", "src/content/task-sidebar.js", "src/content/achievements.js", "src/content/themes.js", "src/content/command-palette.js", "src/content/auto-save.js", "src/content/finals-mode.js", "src/content/content.js"],
       "run_at": "document_end"
     }
   ],
