@@ -2975,3 +2975,254 @@ var PrettyGPA = {
   }
 
 })();
+/* ========================================
+   PRETTY CAMPUS - Dashboard Notes + Grade Export
+   Quick sticky notes on Canvas dashboard +
+   Export grades to CSV
+   BetterCampus has notes, we need this to match.
+   Grade export is a Pretty Campus exclusive.
+   ======================================== */
+
+(function() {
+  'use strict';
+
+  // ============================================================
+  // DASHBOARD NOTES
+  // ============================================================
+  function initNotes() {
+    if (document.getElementById('pc-notes-widget')) return;
+
+    chrome.storage.local.get(['pcNotes'], function(data) {
+      var notes = data.pcNotes || [];
+      createNotesWidget(notes);
+    });
+  }
+
+  function createNotesWidget(notes) {
+    var widget = document.createElement('div');
+    widget.id = 'pc-notes-widget';
+
+    widget.innerHTML =
+      '<div class="pc-notes-header">' +
+        '<span class="pc-notes-title">&#128221; Quick Notes</span>' +
+        '<div class="pc-notes-actions">' +
+          '<button class="pc-notes-btn-export" id="pcExportGrades" title="Export grades to CSV">&#128202; Export Grades</button>' +
+          '<button class="pc-notes-btn-add" id="pcAddNote" title="Add note">+</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="pc-notes-list" id="pcNotesList">' + buildNotesHTML(notes) + '</div>' +
+      '<div class="pc-notes-add-form" id="pcNotesForm" style="display:none;">' +
+        '<textarea id="pcNoteText" class="pc-notes-textarea" placeholder="Type your note..." rows="3"></textarea>' +
+        '<div class="pc-notes-colors" id="pcNoteColors">' +
+          '<span class="pc-notes-color pc-notes-color-active" data-color="#7C3AED" style="background:#7C3AED"></span>' +
+          '<span class="pc-notes-color" data-color="#10B981" style="background:#10B981"></span>' +
+          '<span class="pc-notes-color" data-color="#F59E0B" style="background:#F59E0B"></span>' +
+          '<span class="pc-notes-color" data-color="#EF4444" style="background:#EF4444"></span>' +
+          '<span class="pc-notes-color" data-color="#3B82F6" style="background:#3B82F6"></span>' +
+          '<span class="pc-notes-color" data-color="#EC4899" style="background:#EC4899"></span>' +
+        '</div>' +
+        '<div class="pc-notes-form-btns">' +
+          '<button class="pc-notes-save" id="pcSaveNote">Save Note</button>' +
+          '<button class="pc-notes-cancel" id="pcCancelNote">Cancel</button>' +
+        '</div>' +
+      '</div>';
+
+    // Insert after GPA widget or achievements
+    var gpa = document.getElementById('pc-gpa-widget');
+    var ach = document.getElementById('pc-achievements-panel');
+    var target = ach || gpa;
+    if (target && target.nextSibling) {
+      target.parentNode.insertBefore(widget, target.nextSibling);
+    } else {
+      var content = document.getElementById('content');
+      if (content) content.appendChild(widget);
+      else document.body.appendChild(widget);
+    }
+
+    setupNotesEvents(notes);
+  }
+
+  function buildNotesHTML(notes) {
+    if (notes.length === 0) {
+      return '<div class="pc-notes-empty">No notes yet. Click + to add one.</div>';
+    }
+    return notes.map(function(note, i) {
+      var date = new Date(note.timestamp);
+      var dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      return '<div class="pc-note-item" style="border-left:4px solid ' + note.color + '">' +
+        '<div class="pc-note-text">' + escapeHTML(note.text) + '</div>' +
+        '<div class="pc-note-footer">' +
+          '<span class="pc-note-date">' + dateStr + '</span>' +
+          '<button class="pc-note-delete" data-idx="' + i + '" title="Delete note">&#10005;</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function setupNotesEvents(notes) {
+    var addBtn = document.getElementById('pcAddNote');
+    var form = document.getElementById('pcNotesForm');
+    var saveBtn = document.getElementById('pcSaveNote');
+    var cancelBtn = document.getElementById('pcCancelNote');
+    var exportBtn = document.getElementById('pcExportGrades');
+
+    if (addBtn) {
+      addBtn.addEventListener('click', function() {
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        if (form.style.display === 'block') {
+          document.getElementById('pcNoteText').focus();
+        }
+      });
+    }
+
+    // Color picker
+    document.querySelectorAll('.pc-notes-color').forEach(function(el) {
+      el.addEventListener('click', function() {
+        document.querySelectorAll('.pc-notes-color').forEach(function(c) { c.classList.remove('pc-notes-color-active'); });
+        el.classList.add('pc-notes-color-active');
+      });
+    });
+
+    if (saveBtn) {
+      saveBtn.addEventListener('click', function() {
+        var text = document.getElementById('pcNoteText').value.trim();
+        if (!text) return;
+        var activeColor = document.querySelector('.pc-notes-color-active');
+        var color = activeColor ? activeColor.dataset.color : '#7C3AED';
+
+        notes.unshift({
+          text: text,
+          color: color,
+          timestamp: Date.now()
+        });
+
+        // Keep max 20 notes
+        notes = notes.slice(0, 20);
+        chrome.storage.local.set({ pcNotes: notes });
+
+        document.getElementById('pcNotesList').innerHTML = buildNotesHTML(notes);
+        document.getElementById('pcNoteText').value = '';
+        form.style.display = 'none';
+
+        // Re-attach delete handlers
+        attachDeleteHandlers(notes);
+      });
+    }
+
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', function() {
+        form.style.display = 'none';
+        document.getElementById('pcNoteText').value = '';
+      });
+    }
+
+    // Delete handlers
+    attachDeleteHandlers(notes);
+
+    // Grade export
+    if (exportBtn) {
+      exportBtn.addEventListener('click', function() {
+        exportGradesToCSV();
+      });
+    }
+  }
+
+  function attachDeleteHandlers(notes) {
+    document.querySelectorAll('.pc-note-delete').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var idx = parseInt(btn.dataset.idx);
+        notes.splice(idx, 1);
+        chrome.storage.local.set({ pcNotes: notes });
+        document.getElementById('pcNotesList').innerHTML = buildNotesHTML(notes);
+        attachDeleteHandlers(notes);
+      });
+    });
+  }
+
+  function escapeHTML(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ============================================================
+  // GRADE EXPORT TO CSV
+  // ============================================================
+  function exportGradesToCSV() {
+    if (typeof PrettyAPI === 'undefined') {
+      showExportToast('Grade export requires Canvas data');
+      return;
+    }
+
+    PrettyAPI.getCourses(function(err, courses) {
+      if (!courses || courses.length === 0) {
+        showExportToast('No course data available');
+        return;
+      }
+
+      var csvRows = ['Course Code,Course Title,Credits,Grade (%),Letter Grade,GPA Points'];
+      var totalCredits = 0;
+      var totalGpaPoints = 0;
+
+      courses.forEach(function(c) {
+        var letterGrade = 'N/A';
+        var gpaPoints = 0;
+
+        if (typeof PrettyGPA !== 'undefined' && c.percentage > 0) {
+          letterGrade = PrettyGPA.percentToGrade(c.percentage);
+          gpaPoints = PrettyGPA.gradePoints[letterGrade] || 0;
+        }
+
+        totalCredits += c.credits;
+        totalGpaPoints += gpaPoints * c.credits;
+
+        csvRows.push(
+          '"' + c.name + '",' +
+          '"' + (c.title || '') + '",' +
+          c.credits + ',' +
+          c.percentage + ',' +
+          letterGrade + ',' +
+          gpaPoints.toFixed(2)
+        );
+      });
+
+      // Add summary row
+      var gpa = totalCredits > 0 ? (totalGpaPoints / totalCredits).toFixed(2) : '0.00';
+      csvRows.push('');
+      csvRows.push('"SEMESTER GPA","","' + totalCredits + '","","","' + gpa + '"');
+      csvRows.push('"Generated by Pretty Campus","' + new Date().toLocaleDateString() + '","","","",""');
+
+      var csvContent = csvRows.join('\n');
+      var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      var url = URL.createObjectURL(blob);
+
+      var link = document.createElement('a');
+      link.href = url;
+      link.download = 'pretty-campus-grades-' + new Date().toISOString().slice(0, 10) + '.csv';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      showExportToast('Grades exported to CSV!');
+    });
+  }
+
+  function showExportToast(message) {
+    var toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:#10B981;color:white;padding:10px 24px;border-radius:10px;font-size:14px;z-index:999999;opacity:0;transition:all 0.3s;font-family:-apple-system,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,0.2);';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.style.opacity = '1'; toast.style.transform = 'translateX(-50%) translateY(0)'; }, 100);
+    setTimeout(function() { toast.style.opacity = '0'; setTimeout(function() { toast.remove(); }, 300); }, 3000);
+  }
+
+  // Initialize
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(initNotes, 900); });
+  } else {
+    setTimeout(initNotes, 900);
+  }
+
+})();
