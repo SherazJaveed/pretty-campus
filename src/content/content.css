@@ -1,0 +1,1972 @@
+/* ========================================
+   PRETTY CAMPUS v2.0.0 - Complete CSS Bundle
+   Dark Mode + GPA Widget + Task Sidebar +
+   Achievements + Themes + Command Palette +
+   Auto-Save + Finals Mode + Notifications
+   ======================================== */
+
+/* ============================================================
+   SECTION 1: DARK MODE THEME VARIABLES
+   ============================================================ */
+
+/* AMOLED Black */
+.pc-dark-amoled {
+  --pc-bg: #000000;
+  --pc-card: #111111;
+  --pc-text: #E4E4E7;
+  --pc-accent: #7C3AED;
+}
+
+/* Midnight Violet */
+.pc-dark-midnight {
+  --pc-bg: #1E1B2E;
+  --pc-card: #2D2640;
+  --pc-text: #E4E4E7;
+  --pc-accent: #7C3AED;
+}
+
+/* Warm Dark */
+.pc-dark-warm {
+  --pc-bg: #1C1917;
+  --pc-card: #292524;
+  --pc-text: #E7E5E4;
+  --pc-accent: #FBBF24;
+}
+
+/* ============================================================
+   SECTION 2: DARK MODE - CORE CANVAS ELEMENTS
+   ============================================================ */
+[class*="pc-dark-"] body,
+[class*="pc-dark-"] #application,
+[class*="pc-dark-"] #wrapper,
+[class*="pc-dark-"] #content,
+[class*="pc-dark-"] .ic-Layout-contentMain {
+  background-color: var(--pc-bg) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] .ic-app-header,
+[class*="pc-dark-"] .ic-app-header__main-navigation {
+  background-color: var(--pc-card) !important;
+}
+
+[class*="pc-dark-"] .ic-app-header__menu-list-item .ic-app-header__menu-list-link {
+  color: #D4D4D8 !important;
+}
+
+[class*="pc-dark-"] .ic-app-header__menu-list-item--active .ic-app-header__menu-list-link {
+  background: var(--pc-accent) !important;
+  color: white !important;
+}
+
+[class*="pc-dark-"] #right-side,
+[class*="pc-dark-"] .right-side-list {
+  background: transparent !important;
+  color: var(--pc-text) !important;
+}
+
+/* Dashboard Cards */
+[class*="pc-dark-"] .ic-DashboardCard,
+[class*="pc-dark-"] .ic-DashboardCard__header_content,
+[class*="pc-dark-"] .ic-DashboardCard__body,
+[class*="pc-dark-"] .ic-DashboardCard__action-container {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* Links */
+[class*="pc-dark-"] a:not(.pc-badge):not(.pc-btn) {
+  color: #A78BFA !important;
+}
+
+/* Headers */
+[class*="pc-dark-"] h1, [class*="pc-dark-"] h2,
+[class*="pc-dark-"] h3, [class*="pc-dark-"] h4,
+[class*="pc-dark-"] h5, [class*="pc-dark-"] h6 {
+  color: var(--pc-text) !important;
+}
+
+/* Text */
+[class*="pc-dark-"] p, [class*="pc-dark-"] span:not(.pc-badge):not([class*="pc-"]),
+[class*="pc-dark-"] li, [class*="pc-dark-"] td,
+[class*="pc-dark-"] label, [class*="pc-dark-"] div:not([class*="pc-"]) {
+  color: var(--pc-text) !important;
+}
+
+/* Inputs */
+[class*="pc-dark-"] input:not([type="checkbox"]):not([type="radio"]),
+[class*="pc-dark-"] textarea,
+[class*="pc-dark-"] select {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: #3D3560 !important;
+}
+
+/* Buttons */
+[class*="pc-dark-"] .btn, [class*="pc-dark-"] button.Button {
+  background-color: var(--pc-accent) !important;
+  color: white !important;
+}
+
+/* Tables */
+[class*="pc-dark-"] table, [class*="pc-dark-"] th,
+[class*="pc-dark-"] td, [class*="pc-dark-"] tr {
+  border-color: #3D3560 !important;
+}
+
+[class*="pc-dark-"] th {
+  background-color: var(--pc-card) !important;
+}
+
+/* Alerts & Notifications */
+[class*="pc-dark-"] .alert,
+[class*="pc-dark-"] .ic-notification,
+[class*="pc-dark-"] .ic-flash-info,
+[class*="pc-dark-"] .ic-flash-success {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+
+/* Breadcrumbs */
+[class*="pc-dark-"] .ic-app-crumbs,
+[class*="pc-dark-"] #breadcrumbs {
+  background: transparent !important;
+  color: #9CA3AF !important;
+}
+
+
+/* ============================================================
+   SECTION 3: DARK MODE - CANVAS PAGE SPECIFIC
+   ============================================================ */
+
+/* Quiz Pages */
+[class*="pc-dark-"] .quiz-header, [class*="pc-dark-"] .quiz-submission,
+[class*="pc-dark-"] .question, [class*="pc-dark-"] .question_holder,
+[class*="pc-dark-"] .answers, [class*="pc-dark-"] .answer {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+[class*="pc-dark-"] .answer.correct_answer { background-color: rgba(16,185,129,0.15) !important; }
+[class*="pc-dark-"] .answer.wrong_answer { background-color: rgba(239,68,68,0.15) !important; }
+
+/* Modules Page */
+[class*="pc-dark-"] .context_module, [class*="pc-dark-"] .ig-list,
+[class*="pc-dark-"] .ig-row, [class*="pc-dark-"] .ig-header {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: #3D3560 !important;
+}
+[class*="pc-dark-"] .ig-header { background-color: rgba(124,58,237,0.1) !important; }
+
+/* Discussion Pages */
+[class*="pc-dark-"] .discussion-entries, [class*="pc-dark-"] .discussion-entry,
+[class*="pc-dark-"] .entry-content, [class*="pc-dark-"] .replies {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: #3D3560 !important;
+}
+[class*="pc-dark-"] .discussion-entry .author { color: #A78BFA !important; }
+
+/* Grades Page */
+[class*="pc-dark-"] #grades_summary, [class*="pc-dark-"] .student_assignment {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+[class*="pc-dark-"] .student_assignment .assignment_name a { color: #A78BFA !important; }
+[class*="pc-dark-"] .total_grade .score_value { color: #10B981 !important; }
+
+/* Calendar Page */
+[class*="pc-dark-"] .fc-view-container, [class*="pc-dark-"] .fc-day,
+[class*="pc-dark-"] .fc-day-header, [class*="pc-dark-"] .fc-widget-header {
+  background-color: var(--pc-bg) !important;
+  color: var(--pc-text) !important;
+  border-color: #3D3560 !important;
+}
+[class*="pc-dark-"] .fc-today { background-color: rgba(124,58,237,0.1) !important; }
+[class*="pc-dark-"] .fc-button { background-color: var(--pc-card) !important; color: var(--pc-text) !important; }
+
+/* Assignments Page */
+[class*="pc-dark-"] .assignment-list, [class*="pc-dark-"] .assignment {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: #3D3560 !important;
+}
+
+/* Files Page */
+[class*="pc-dark-"] .ef-main, [class*="pc-dark-"] .ef-item-row {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+
+/* Inbox */
+[class*="pc-dark-"] .conversations, [class*="pc-dark-"] .message-header,
+[class*="pc-dark-"] .message-content {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: #3D3560 !important;
+}
+
+/* Modals */
+[class*="pc-dark-"] .ui-dialog, [class*="pc-dark-"] .ReactModal__Content,
+[class*="pc-dark-"] [role="dialog"] {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+[class*="pc-dark-"] .ReactModal__Overlay { background-color: rgba(0,0,0,0.7) !important; }
+
+/* Rich Content Editor */
+[class*="pc-dark-"] .tox.tox-tinymce, [class*="pc-dark-"] .tox .tox-toolbar,
+[class*="pc-dark-"] .tox .tox-toolbar__primary, [class*="pc-dark-"] .tox .tox-statusbar {
+  background-color: var(--pc-card) !important;
+  border-color: #3D3560 !important;
+}
+[class*="pc-dark-"] .tox .tox-tbtn { color: #D4D4D8 !important; }
+
+/* DocViewer - EXCLUDE from dark mode */
+[class*="pc-dark-"] .docviewer-container *, [class*="pc-dark-"] #doc_preview * {
+  background-color: unset !important;
+  color: unset !important;
+}
+
+/* Images - slight dim */
+[class*="pc-dark-"] img:not(.avatar):not([src*="icon"]):not(.pc-badge) {
+  opacity: 0.88;
+  transition: opacity 0.2s;
+}
+[class*="pc-dark-"] img:not(.avatar):not([src*="icon"]):hover { opacity: 1; }
+
+/* Scrollbar */
+[class*="pc-dark-"] ::-webkit-scrollbar { width: 8px; height: 8px; }
+[class*="pc-dark-"] ::-webkit-scrollbar-track { background: var(--pc-bg); }
+[class*="pc-dark-"] ::-webkit-scrollbar-thumb { background: #3D3560; border-radius: 4px; }
+[class*="pc-dark-"] ::-webkit-scrollbar-thumb:hover { background: #7C3AED; }
+
+
+/* ============================================================
+   SECTION 4: GPA WIDGET STYLES
+   ============================================================ */
+.pc-gpa-container { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 100%; margin: 0 0 24px 0; border-radius: 12px; overflow: hidden; border: 1px solid #E5E7EB; background: white; }
+.pc-gpa-overview { display: flex; align-items: center; justify-content: space-between; padding: 24px; background: linear-gradient(135deg, #7C3AED, #6D28D9); color: white; }
+.pc-gpa-big { text-align: center; }
+.pc-gpa-number { font-size: 56px; font-weight: 700; line-height: 1; color: white !important; }
+.pc-gpa-label { font-size: 14px; opacity: 0.8; margin-top: 4px; color: white !important; }
+.pc-gpa-stats { display: flex; gap: 32px; }
+.pc-gpa-stat { text-align: center; }
+.pc-gpa-stat-value { display: block; font-size: 24px; font-weight: 600; color: white !important; }
+.pc-gpa-stat-label { font-size: 12px; opacity: 0.7; color: white !important; }
+.pc-gpa-courses-header { display: grid; grid-template-columns: 2fr 1fr 0.8fr 0.6fr; padding: 10px 24px; font-size: 12px; font-weight: 600; color: #6B7280; background: #F9FAFB; border-bottom: 1px solid #E5E7EB; text-transform: uppercase; letter-spacing: 0.5px; }
+.pc-gpa-course { display: grid; grid-template-columns: 4px 2fr 1fr 0.8fr 0.6fr; align-items: center; padding: 12px 24px; border-bottom: 1px solid #F3F4F6; transition: background 0.15s; }
+.pc-gpa-course:hover { background: #F9FAFB; }
+.pc-gpa-course-color { width: 4px; height: 36px; border-radius: 2px; margin-right: 12px; }
+.pc-gpa-course-name { font-size: 14px; font-weight: 600; color: #1F2937; }
+.pc-gpa-course-title { font-size: 12px; color: #6B7280; }
+.pc-gpa-course-grade { font-size: 14px; font-weight: 600; }
+.pc-gpa-course-trend { font-size: 13px; font-weight: 500; }
+.pc-gpa-course-credits { font-size: 13px; color: #6B7280; text-align: right; }
+.pc-gpa-finals { padding: 20px 24px; border-top: 1px solid #E5E7EB; background: #FAFAFE; }
+.pc-gpa-finals-title, .pc-gpa-impact-title { font-size: 16px; font-weight: 600; color: #1F2937; margin-bottom: 14px; }
+.pc-gpa-finals-form { display: grid; gap: 12px; }
+.pc-gpa-finals-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+.pc-gpa-finals-input { flex: 1; min-width: 140px; }
+.pc-gpa-finals-input label { display: block; font-size: 12px; color: #6B7280; margin-bottom: 4px; }
+.pc-select { width: 100%; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 13px; color: #1F2937; background: white; cursor: pointer; }
+.pc-select:focus { outline: none; border-color: #7C3AED; box-shadow: 0 0 0 2px rgba(124,58,237,0.15); }
+.pc-btn { padding: 8px 20px; background: #7C3AED; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+.pc-btn:hover { background: #6D28D9; }
+.pc-gpa-finals-result { margin-top: 12px; }
+.pc-result-ok, .pc-result-bad, .pc-result-great { padding: 12px 16px; border-radius: 8px; font-size: 14px; line-height: 1.5; }
+.pc-result-ok { background: #F0FDF4; border-left: 4px solid #10B981; color: #166534; }
+.pc-result-bad { background: #FEF2F2; border-left: 4px solid #EF4444; color: #991B1B; }
+.pc-result-great { background: #EFF6FF; border-left: 4px solid #3B82F6; color: #1E40AF; }
+.pc-gpa-impact { padding: 20px 24px; border-top: 1px solid #E5E7EB; }
+.pc-impact-hint { font-size: 13px; color: #9CA3AF; font-style: italic; }
+.pc-impact-row { display: grid; grid-template-columns: 1fr auto auto; gap: 16px; padding: 10px 14px; border-radius: 8px; margin-bottom: 6px; background: #F9FAFB; align-items: center; }
+.pc-impact-row:hover { background: #F3F4F6; }
+.pc-impact-label { font-size: 13px; color: #4B5563; }
+.pc-impact-grade { font-size: 14px; font-weight: 600; }
+.pc-impact-diff { font-size: 13px; font-weight: 500; min-width: 50px; text-align: right; }
+
+/* GPA Widget Dark Mode */
+[class*="pc-dark-"] .pc-gpa-container { background: var(--pc-card); border-color: #3D3560; }
+[class*="pc-dark-"] .pc-gpa-courses-header { background: rgba(124,58,237,0.1); color: #A78BFA; border-color: #3D3560; }
+[class*="pc-dark-"] .pc-gpa-course { border-color: #2D2640; }
+[class*="pc-dark-"] .pc-gpa-course:hover { background: rgba(124,58,237,0.05); }
+[class*="pc-dark-"] .pc-gpa-course-name { color: #E4E4E7 !important; }
+[class*="pc-dark-"] .pc-gpa-course-title { color: #9CA3AF !important; }
+[class*="pc-dark-"] .pc-gpa-finals { background: rgba(124,58,237,0.05); border-color: #3D3560; }
+[class*="pc-dark-"] .pc-gpa-finals-title, [class*="pc-dark-"] .pc-gpa-impact-title { color: #E4E4E7 !important; }
+[class*="pc-dark-"] .pc-select { background: #2D2640 !important; color: #E4E4E7 !important; border-color: #3D3560 !important; }
+[class*="pc-dark-"] .pc-impact-row { background: rgba(124,58,237,0.05); }
+[class*="pc-dark-"] .pc-impact-label { color: #D4D4D8 !important; }
+[class*="pc-dark-"] .pc-gpa-impact { border-color: #3D3560; }
+[class*="pc-dark-"] .pc-result-ok { background: rgba(16,185,129,0.1); color: #6EE7B7 !important; }
+[class*="pc-dark-"] .pc-result-bad { background: rgba(239,68,68,0.1); color: #FCA5A5 !important; }
+[class*="pc-dark-"] .pc-result-great { background: rgba(59,130,246,0.1); color: #93C5FD !important; }
+
+
+/* ============================================================
+   SECTION 5-11: FEATURE MODULE STYLES
+   ============================================================ */
+
+/* ========================================
+   PRETTY CAMPUS - Task Sidebar Styles
+   Progress Rings, Task List, Streak, Confetti
+   ======================================== */
+
+/* Confetti animation */
+@keyframes pcConfetti {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* Sidebar Container */
+#pc-task-sidebar {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #1E1B2E;
+  color: #E4E4E7;
+  width: 320px;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 0;
+  border-left: 1px solid #3D3560;
+}
+
+.pc-sidebar-inner {
+  padding: 16px;
+}
+
+/* Header */
+.pc-sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.pc-sidebar-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #F4F4F5;
+}
+
+.pc-sidebar-streak {
+  font-size: 13px;
+  color: #F59E0B;
+  font-weight: 500;
+  background: rgba(245, 158, 11, 0.1);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+/* Progress Rings */
+.pc-rings-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #2D2640;
+  border-radius: 12px;
+}
+
+.pc-ring-item {
+  text-align: center;
+  width: 60px;
+}
+
+.pc-ring-label {
+  display: block;
+  font-size: 10px;
+  color: #9CA3AF;
+  margin-top: 2px;
+}
+
+.pc-ring-pct {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Stats Bar */
+.pc-stats-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.pc-stat {
+  flex: 1;
+  text-align: center;
+  padding: 6px 4px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.pc-stat-overdue {
+  background: rgba(239, 68, 68, 0.15);
+  color: #FCA5A5;
+}
+
+.pc-stat-today {
+  background: rgba(245, 158, 11, 0.15);
+  color: #FCD34D;
+}
+
+.pc-stat-week {
+  background: rgba(59, 130, 246, 0.15);
+  color: #93C5FD;
+}
+
+/* Controls */
+.pc-controls {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.pc-sort-select,
+.pc-filter-select {
+  flex: 1;
+  padding: 6px 8px;
+  background: #2D2640;
+  color: #E4E4E7;
+  border: 1px solid #3D3560;
+  border-radius: 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.pc-sort-select:focus,
+.pc-filter-select:focus {
+  outline: none;
+  border-color: #7C3AED;
+}
+
+/* Add Task */
+.pc-add-task {
+  text-align: center;
+  padding: 8px;
+  color: #A78BFA;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px dashed #3D3560;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+}
+
+.pc-add-task:hover {
+  background: rgba(124, 58, 237, 0.1);
+  border-color: #7C3AED;
+}
+
+/* Add Task Form */
+.pc-add-form {
+  padding: 10px;
+  background: #2D2640;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.pc-input {
+  width: 100%;
+  padding: 7px 10px;
+  background: #1E1B2E;
+  color: #E4E4E7;
+  border: 1px solid #3D3560;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.pc-input:focus {
+  outline: none;
+  border-color: #7C3AED;
+}
+
+.pc-add-form-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.pc-btn-add {
+  flex: 1;
+  padding: 6px;
+  background: #7C3AED;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pc-btn-add:hover { background: #6D28D9; }
+
+.pc-btn-cancel {
+  flex: 1;
+  padding: 6px;
+  background: #3D3560;
+  color: #D4D4D8;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* Section Title */
+.pc-task-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #78716C;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #2D2640;
+}
+
+.pc-completed-title {
+  cursor: pointer;
+  margin-top: 16px;
+}
+
+.pc-completed-title:hover { color: #A78BFA; }
+
+/* Task Item */
+.pc-task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+
+.pc-task-item:hover {
+  background: rgba(124, 58, 237, 0.08);
+}
+
+.pc-task-check {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #3D3560;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0;
+  color: white;
+}
+
+.pc-task-check:hover {
+  transform: scale(1.15);
+  background: rgba(124, 58, 237, 0.2);
+}
+
+.pc-task-checked {
+  font-size: 12px;
+  color: white;
+}
+
+.pc-task-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pc-task-name {
+  font-size: 13px;
+  color: #E4E4E7;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.pc-task-strikethrough {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.pc-task-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 3px;
+}
+
+.pc-task-course {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.pc-task-points {
+  font-size: 11px;
+  color: #9CA3AF;
+}
+
+.pc-task-due {
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-top: 2px;
+}
+
+.pc-overdue {
+  background: rgba(239, 68, 68, 0.15);
+  color: #FCA5A5;
+}
+
+.pc-urgent {
+  background: rgba(245, 158, 11, 0.15);
+  color: #FCD34D;
+}
+
+.pc-soon {
+  background: rgba(249, 115, 22, 0.1);
+  color: #FDBA74;
+}
+
+.pc-normal {
+  background: rgba(59, 130, 246, 0.1);
+  color: #93C5FD;
+}
+
+.pc-task-done {
+  opacity: 0.6;
+}
+
+.pc-task-empty {
+  text-align: center;
+  padding: 24px 16px;
+  color: #10B981;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Workload */
+.pc-workload {
+  margin-top: 16px;
+  padding: 12px;
+  background: #2D2640;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.pc-workload-title {
+  font-size: 12px;
+  color: #9CA3AF;
+  margin-bottom: 4px;
+}
+
+.pc-workload-hours {
+  font-size: 15px;
+  font-weight: 600;
+  color: #A78BFA;
+}
+
+/* Light mode support */
+body:not([class*="pc-dark-"]) #pc-task-sidebar {
+  background: white;
+  border-color: #E5E7EB;
+  color: #1F2937;
+}
+
+body:not([class*="pc-dark-"]) .pc-sidebar-title { color: #1F2937; }
+body:not([class*="pc-dark-"]) .pc-task-name { color: #1F2937; }
+body:not([class*="pc-dark-"]) .pc-rings-container { background: #F3F4F6; }
+body:not([class*="pc-dark-"]) .pc-stats-bar .pc-stat { background: #F3F4F6; }
+body:not([class*="pc-dark-"]) .pc-sort-select,
+body:not([class*="pc-dark-"]) .pc-filter-select { background: #F9FAFB; color: #1F2937; border-color: #E5E7EB; }
+body:not([class*="pc-dark-"]) .pc-add-form { background: #F9FAFB; }
+body:not([class*="pc-dark-"]) .pc-input { background: white; color: #1F2937; border-color: #E5E7EB; }
+body:not([class*="pc-dark-"]) .pc-workload { background: #F3F4F6; }
+body:not([class*="pc-dark-"]) .pc-task-check { border-color: #D1D5DB; }
+
+/* Scrollbar */
+#pc-task-sidebar::-webkit-scrollbar { width: 6px; }
+#pc-task-sidebar::-webkit-scrollbar-track { background: transparent; }
+#pc-task-sidebar::-webkit-scrollbar-thumb { background: #3D3560; border-radius: 3px; }
+#pc-task-sidebar::-webkit-scrollbar-thumb:hover { background: #7C3AED; }
+
+/* ========================================
+   PRETTY CAMPUS - Achievement Badges Styles
+   ======================================== */
+
+/* Confetti burst animation */
+@keyframes pcConfettiBurst {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
+}
+
+/* Badge notification slide-in */
+@keyframes pcBadgeSlideIn {
+  from { transform: translateX(120%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Container */
+.pc-ach-container {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #2D2640;
+  border: 1px solid #3D3560;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+/* Header */
+.pc-ach-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background: rgba(124, 58, 237, 0.15);
+  cursor: pointer;
+}
+
+.pc-ach-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #E4E4E7;
+}
+
+.pc-ach-toggle {
+  color: #A78BFA;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Body */
+.pc-ach-body {
+  padding: 16px 20px;
+}
+
+/* Level + XP */
+.pc-ach-level {
+  margin-bottom: 16px;
+}
+
+.pc-ach-level-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.pc-ach-level-badge {
+  background: #7C3AED;
+  color: white;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pc-ach-level-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #E4E4E7;
+}
+
+.pc-ach-xp-count {
+  font-size: 13px;
+  color: #A78BFA;
+  margin-left: auto;
+}
+
+.pc-ach-xp-bar {
+  height: 8px;
+  background: #1E1B2E;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.pc-ach-xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7C3AED, #A78BFA);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.pc-ach-xp-label {
+  font-size: 11px;
+  color: #6B7280;
+  margin-top: 4px;
+  text-align: right;
+}
+
+/* Stats Row */
+.pc-ach-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.pc-ach-stat {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  background: #1E1B2E;
+  border-radius: 8px;
+}
+
+.pc-ach-stat-val {
+  font-size: 18px;
+  font-weight: 600;
+  color: #E4E4E7;
+}
+
+.pc-ach-stat-label {
+  font-size: 11px;
+  color: #6B7280;
+  margin-top: 2px;
+}
+
+/* Badge Grid */
+.pc-badge-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.pc-badge-card {
+  position: relative;
+  text-align: center;
+  padding: 12px 6px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.pc-badge-card:hover {
+  transform: scale(1.05);
+}
+
+.pc-badge-earned {
+  background: rgba(124, 58, 237, 0.1);
+  border-color: #7C3AED;
+}
+
+.pc-badge-locked {
+  background: #1E1B2E;
+  border-color: #2D2640;
+  opacity: 0.5;
+}
+
+.pc-badge-locked:hover {
+  opacity: 0.7;
+}
+
+.pc-badge-emoji {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.pc-badge-name {
+  font-size: 10px;
+  font-weight: 500;
+  color: #E4E4E7;
+  line-height: 1.2;
+}
+
+.pc-badge-xp {
+  font-size: 9px;
+  font-weight: 600;
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+
+.pc-badge-check {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 10px;
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.2);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pc-badge-lock {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 8px;
+  color: #6B7280;
+}
+
+/* Semester Progress */
+.pc-semester-progress {
+  padding-top: 12px;
+  border-top: 1px solid #3D3560;
+}
+
+.pc-semester-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #E4E4E7;
+  margin-bottom: 8px;
+}
+
+.pc-semester-bar {
+  height: 10px;
+  background: #1E1B2E;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.pc-semester-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10B981, #059669);
+  border-radius: 5px;
+  transition: width 0.5s ease;
+}
+
+.pc-semester-label {
+  font-size: 11px;
+  color: #6B7280;
+  margin-top: 4px;
+}
+
+/* Badge Notification Toast */
+.pc-badge-notif {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background: #2D2640;
+  border: 2px solid #7C3AED;
+  border-radius: 12px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 99999;
+  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3);
+  transform: translateX(120%);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pc-badge-notif-show {
+  transform: translateX(0);
+}
+
+.pc-badge-notif-emoji {
+  font-size: 36px;
+}
+
+.pc-badge-notif-title {
+  font-size: 11px;
+  color: #A78BFA;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.pc-badge-notif-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #E4E4E7;
+}
+
+.pc-badge-notif-xp {
+  font-size: 13px;
+  color: #10B981;
+  font-weight: 600;
+}
+
+/* Light mode support */
+body:not([class*="pc-dark-"]) .pc-ach-container {
+  background: white;
+  border-color: #E5E7EB;
+}
+
+body:not([class*="pc-dark-"]) .pc-ach-header {
+  background: rgba(124, 58, 237, 0.05);
+}
+
+body:not([class*="pc-dark-"]) .pc-ach-title { color: #1F2937; }
+body:not([class*="pc-dark-"]) .pc-ach-level-title { color: #1F2937; }
+body:not([class*="pc-dark-"]) .pc-ach-stat { background: #F9FAFB; }
+body:not([class*="pc-dark-"]) .pc-ach-stat-val { color: #1F2937; }
+body:not([class*="pc-dark-"]) .pc-ach-xp-bar { background: #F3F4F6; }
+body:not([class*="pc-dark-"]) .pc-badge-earned { background: rgba(124, 58, 237, 0.05); }
+body:not([class*="pc-dark-"]) .pc-badge-locked { background: #F9FAFB; }
+body:not([class*="pc-dark-"]) .pc-badge-name { color: #1F2937; }
+body:not([class*="pc-dark-"]) .pc-semester-bar { background: #F3F4F6; }
+body:not([class*="pc-dark-"]) .pc-badge-notif { background: white; border-color: #7C3AED; }
+body:not([class*="pc-dark-"]) .pc-badge-notif-name { color: #1F2937; }
+
+/* ========================================
+   PRETTY CAMPUS - Custom Theme CSS Support
+   Applies CSS variable-based theming
+   ======================================== */
+
+/* Custom dark theme (university + aesthetic dark themes) */
+.pc-theme-custom-dark body,
+.pc-theme-custom-dark #application,
+.pc-theme-custom-dark #wrapper,
+.pc-theme-custom-dark #content {
+  background-color: var(--pc-bg) !important;
+  color: var(--pc-text) !important;
+}
+
+.pc-theme-custom-dark .ic-app-header,
+.pc-theme-custom-dark .ic-app-header__main-navigation {
+  background-color: var(--pc-card) !important;
+}
+
+.pc-theme-custom-dark .ic-DashboardCard {
+  background-color: var(--pc-card) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+.pc-theme-custom-dark a {
+  color: var(--pc-accent) !important;
+}
+
+.pc-theme-custom-dark h1, .pc-theme-custom-dark h2,
+.pc-theme-custom-dark h3, .pc-theme-custom-dark h4 {
+  color: var(--pc-text) !important;
+}
+
+.pc-theme-custom-dark p, .pc-theme-custom-dark span,
+.pc-theme-custom-dark li, .pc-theme-custom-dark td,
+.pc-theme-custom-dark label {
+  color: var(--pc-text) !important;
+}
+
+.pc-theme-custom-dark input,
+.pc-theme-custom-dark textarea,
+.pc-theme-custom-dark select {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: rgba(255,255,255,0.15) !important;
+}
+
+.pc-theme-custom-dark button,
+.pc-theme-custom-dark .btn {
+  background-color: var(--pc-accent) !important;
+  color: white !important;
+}
+
+.pc-theme-custom-dark table, .pc-theme-custom-dark th,
+.pc-theme-custom-dark td {
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+.pc-theme-custom-dark th {
+  background-color: var(--pc-card) !important;
+}
+
+.pc-theme-custom-dark .ic-app-header__menu-list-item--active .ic-app-header__menu-list-link {
+  background-color: var(--pc-accent) !important;
+}
+
+.pc-theme-custom-dark #right-side {
+  background-color: transparent !important;
+}
+
+.pc-theme-custom-dark .alert {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+
+.pc-theme-custom-dark .ic-notification {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+
+/* Secondary accent for university themes (used for highlights) */
+.pc-theme-custom-dark .ic-DashboardCard__header {
+  border-bottom: 3px solid var(--pc-secondary, var(--pc-accent)) !important;
+}
+
+.pc-theme-custom-dark .pc-badge {
+  background: var(--pc-accent) !important;
+}
+
+/* Custom light theme */
+.pc-theme-custom-light body,
+.pc-theme-custom-light #application,
+.pc-theme-custom-light #wrapper,
+.pc-theme-custom-light #content {
+  background-color: var(--pc-bg) !important;
+  color: var(--pc-text) !important;
+}
+
+.pc-theme-custom-light .ic-app-header {
+  background-color: var(--pc-card) !important;
+}
+
+.pc-theme-custom-light .ic-DashboardCard {
+  background-color: white !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+}
+
+.pc-theme-custom-light a {
+  color: var(--pc-accent) !important;
+}
+
+.pc-theme-custom-light .btn {
+  background-color: var(--pc-accent) !important;
+  color: white !important;
+}
+
+.pc-theme-custom-light .ic-app-header__menu-list-item--active .ic-app-header__menu-list-link {
+  background-color: var(--pc-accent) !important;
+}
+
+/* Scrollbar theming */
+.pc-theme-custom-dark ::-webkit-scrollbar-thumb {
+  background: var(--pc-accent) !important;
+}
+
+.pc-theme-custom-dark ::-webkit-scrollbar-track {
+  background: var(--pc-bg) !important;
+}
+
+/* ========================================
+   PRETTY CAMPUS - Command Palette Styles
+   Spotlight/Raycast-inspired design
+   ======================================== */
+
+/* Overlay */
+#pc-cmd-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 999999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+  animation: pcCmdFadeIn 0.15s ease;
+}
+
+@keyframes pcCmdFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.pc-cmd-closing {
+  opacity: 0 !important;
+  transition: opacity 0.2s ease;
+}
+
+/* Palette */
+#pc-cmd-palette {
+  width: 560px;
+  max-width: 90vw;
+  background: #1E1B2E;
+  border: 1px solid #3D3560;
+  border-radius: 16px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: pcCmdSlideIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes pcCmdSlideIn {
+  from { transform: scale(0.95) translateY(-10px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* Search */
+.pc-cmd-search-wrap {
+  display: flex;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid #3D3560;
+  gap: 10px;
+}
+
+.pc-cmd-search-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.pc-cmd-input {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #E4E4E7;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  outline: none;
+}
+
+.pc-cmd-input::placeholder {
+  color: #6B7280;
+}
+
+.pc-cmd-shortcut {
+  font-size: 11px;
+  color: #6B7280;
+  background: #2D2640;
+  padding: 3px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* Results */
+.pc-cmd-results {
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.pc-cmd-results::-webkit-scrollbar { width: 4px; }
+.pc-cmd-results::-webkit-scrollbar-thumb { background: #3D3560; border-radius: 2px; }
+
+/* Category */
+.pc-cmd-category {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 10px 12px 4px;
+}
+
+/* Command Item */
+.pc-cmd-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.pc-cmd-item:hover,
+.pc-cmd-selected {
+  background: rgba(124, 58, 237, 0.15);
+}
+
+.pc-cmd-item-icon {
+  font-size: 18px;
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.pc-cmd-item-name {
+  font-size: 14px;
+  color: #E4E4E7;
+}
+
+.pc-cmd-selected .pc-cmd-item-name {
+  color: #A78BFA;
+}
+
+.pc-cmd-empty {
+  text-align: center;
+  padding: 24px;
+  color: #6B7280;
+  font-size: 14px;
+}
+
+/* Footer */
+.pc-cmd-footer {
+  display: flex;
+  gap: 16px;
+  padding: 10px 18px;
+  border-top: 1px solid #3D3560;
+  font-size: 11px;
+  color: #6B7280;
+}
+
+/* Light mode support */
+body:not([class*="pc-dark-"]):not([class*="pc-theme-custom-dark"]) #pc-cmd-palette {
+  background: white;
+  border-color: #E5E7EB;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.15);
+}
+
+body:not([class*="pc-dark-"]):not([class*="pc-theme-custom-dark"]) .pc-cmd-input {
+  color: #1F2937;
+}
+
+body:not([class*="pc-dark-"]):not([class*="pc-theme-custom-dark"]) .pc-cmd-item-name {
+  color: #1F2937;
+}
+
+body:not([class*="pc-dark-"]):not([class*="pc-theme-custom-dark"]) .pc-cmd-search-wrap {
+  border-color: #E5E7EB;
+}
+
+body:not([class*="pc-dark-"]):not([class*="pc-theme-custom-dark"]) .pc-cmd-footer {
+  border-color: #E5E7EB;
+}
+
+body:not([class*="pc-dark-"]):not([class*="pc-theme-custom-dark"]) .pc-cmd-item:hover,
+body:not([class*="pc-dark-"]):not([class*="pc-theme-custom-dark"]) .pc-cmd-selected {
+  background: rgba(124, 58, 237, 0.08);
+}
+
+body:not([class*="pc-dark-"]):not([class*="pc-theme-custom-dark"]) .pc-cmd-shortcut {
+  background: #F3F4F6;
+}
+
+/* ========================================
+   PRETTY CAMPUS - Auto-Save Styles
+   ======================================== */
+
+/* Recovery Banner */
+#pc-recovery-banner {
+  background: linear-gradient(135deg, #7C3AED, #6D28D9);
+  padding: 12px 20px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  animation: pcSlideDown 0.3s ease;
+}
+
+@keyframes pcSlideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.pc-recovery-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pc-recovery-icon { font-size: 20px; }
+
+.pc-recovery-text {
+  flex: 1;
+  color: white;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.pc-recovery-btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  transition: opacity 0.2s;
+}
+
+.pc-recovery-btn:hover { opacity: 0.9; }
+
+.pc-recovery-restore {
+  background: white;
+  color: #7C3AED;
+}
+
+.pc-recovery-dismiss {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+/* Save Indicator */
+.pc-save-indicator {
+  position: fixed;
+  bottom: 50px;
+  right: 16px;
+  background: #2D2640;
+  color: #9CA3AF;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  z-index: 99998;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  border: 1px solid #3D3560;
+}
+
+.pc-save-flash {
+  color: #10B981 !important;
+  border-color: #10B981 !important;
+}
+
+.pc-save-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #6B7280;
+  display: inline-block;
+}
+
+.pc-save-dot-active {
+  background: #10B981;
+  animation: pcPulse 1s ease infinite;
+}
+
+@keyframes pcPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Toast */
+.pc-toast {
+  position: fixed;
+  bottom: 90px;
+  right: 16px;
+  background: #10B981;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  z-index: 99999;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+}
+
+.pc-toast-show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Light mode */
+body:not([class*="pc-dark-"]) .pc-save-indicator {
+  background: white;
+  border-color: #E5E7EB;
+  color: #6B7280;
+}
+
+/* ========================================
+   PRETTY CAMPUS - Finals Mode Styles
+   ======================================== */
+
+/* Toggle Button (graduation cap) */
+.pc-fm-toggle {
+  position: fixed;
+  bottom: 80px;
+  left: 16px;
+  width: 44px;
+  height: 44px;
+  background: #2D2640;
+  border: 2px solid #3D3560;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 99997;
+  transition: all 0.2s;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+
+.pc-fm-toggle:hover {
+  transform: scale(1.1);
+  border-color: #7C3AED;
+}
+
+.pc-fm-toggle-open {
+  background: #7C3AED;
+  border-color: #7C3AED;
+}
+
+/* Panel Body */
+.pc-fm-body {
+  position: fixed;
+  bottom: 130px;
+  left: 16px;
+  width: 280px;
+  background: #1E1B2E;
+  border: 1px solid #3D3560;
+  border-radius: 16px;
+  z-index: 99997;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  overflow: hidden;
+  animation: pcFmSlideUp 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+@keyframes pcFmSlideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Header */
+.pc-fm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: rgba(124, 58, 237, 0.15);
+}
+
+.pc-fm-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #E4E4E7;
+}
+
+.pc-fm-status {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9CA3AF;
+}
+
+/* Timer */
+.pc-fm-timer-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.pc-fm-timer-svg {
+  display: block;
+}
+
+.pc-fm-timer-text {
+  position: absolute;
+  text-align: center;
+}
+
+.pc-fm-time {
+  font-size: 32px;
+  font-weight: 700;
+  color: #E4E4E7;
+  letter-spacing: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pc-fm-mode {
+  font-size: 11px;
+  color: #A78BFA;
+  margin-top: 2px;
+}
+
+/* Controls */
+.pc-fm-controls {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  padding: 0 18px 12px;
+}
+
+.pc-fm-btn {
+  padding: 7px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.pc-fm-btn-start {
+  background: #7C3AED;
+  color: white;
+  flex: 1;
+}
+
+.pc-fm-btn-start:hover { background: #6D28D9; }
+
+.pc-fm-btn-pause {
+  background: #F59E0B;
+  color: white;
+}
+
+.pc-fm-btn-pause:hover { background: #D97706; }
+
+.pc-fm-btn-skip {
+  background: #3B82F6;
+  color: white;
+}
+
+.pc-fm-btn-skip:hover { background: #2563EB; }
+
+.pc-fm-btn-reset {
+  background: #EF4444;
+  color: white;
+}
+
+.pc-fm-btn-reset:hover { background: #DC2626; }
+
+/* Session Info */
+.pc-fm-session-info {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 18px;
+  font-size: 11px;
+  color: #6B7280;
+  border-top: 1px solid #2D2640;
+}
+
+/* Mode Buttons */
+.pc-fm-modes {
+  display: flex;
+  gap: 4px;
+  padding: 8px 18px;
+}
+
+.pc-fm-mode-btn {
+  flex: 1;
+  padding: 5px 4px;
+  background: #2D2640;
+  color: #9CA3AF;
+  border: 1px solid #3D3560;
+  border-radius: 6px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.pc-fm-mode-btn:hover {
+  border-color: #7C3AED;
+  color: #E4E4E7;
+}
+
+.pc-fm-mode-active {
+  background: rgba(124, 58, 237, 0.2);
+  border-color: #7C3AED;
+  color: #A78BFA;
+}
+
+/* Blocked Sites */
+.pc-fm-blocked {
+  padding: 10px 18px 14px;
+  border-top: 1px solid #2D2640;
+}
+
+.pc-fm-blocked-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.pc-fm-blocked-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.pc-fm-blocked-site {
+  display: inline-block;
+  padding: 3px 8px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #FCA5A5;
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+.pc-fm-blocked-add {
+  display: flex;
+  gap: 4px;
+}
+
+.pc-fm-input {
+  flex: 1;
+  padding: 5px 8px;
+  background: #2D2640;
+  color: #E4E4E7;
+  border: 1px solid #3D3560;
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.pc-fm-input:focus {
+  outline: none;
+  border-color: #7C3AED;
+}
+
+.pc-fm-btn-add {
+  width: 28px;
+  height: 28px;
+  background: #7C3AED;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Notification */
+.pc-fm-notif {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: #2D2640;
+  border: 2px solid #7C3AED;
+  color: #E4E4E7;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  z-index: 999999;
+  opacity: 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.pc-fm-notif-show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.pc-fm-notif-icon {
+  font-size: 18px;
+  margin-right: 6px;
+}
+
+/* Light mode */
+body:not([class*="pc-dark-"]) .pc-fm-toggle {
+  background: white;
+  border-color: #E5E7EB;
+}
+
+body:not([class*="pc-dark-"]) .pc-fm-body {
+  background: white;
+  border-color: #E5E7EB;
+}
+
+body:not([class*="pc-dark-"]) .pc-fm-header {
+  background: rgba(124, 58, 237, 0.05);
+}
+
+body:not([class*="pc-dark-"]) .pc-fm-title,
+body:not([class*="pc-dark-"]) .pc-fm-time {
+  color: #1F2937;
+}
+
+body:not([class*="pc-dark-"]) .pc-fm-mode-btn {
+  background: #F9FAFB;
+  border-color: #E5E7EB;
+  color: #6B7280;
+}
+
+body:not([class*="pc-dark-"]) .pc-fm-input {
+  background: #F9FAFB;
+  color: #1F2937;
+  border-color: #E5E7EB;
+}
+
+/* PRETTY CAMPUS - Notification Styles */
+
+#pc-notif-center {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 99998;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.pc-notif-bell {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background: #2D2640;
+  border: 1px solid #3D3560;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pc-notif-bell:hover { transform: scale(1.1); border-color: #7C3AED; }
+
+.pc-notif-bell-icon { font-size: 18px; }
+
+.pc-notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #EF4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.pc-notif-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 340px;
+  max-height: 480px;
+  background: #1E1B2E;
+  border: 1px solid #3D3560;
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  overflow: hidden;
+  animation: pcNotifSlide 0.2s ease;
+}
+
+@keyframes pcNotifSlide {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.pc-notif-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid #3D3560;
+}
+
+.pc-notif-title { font-size: 15px; font-weight: 600; color: #E4E4E7; }
+
+.pc-notif-clear {
+  background: none;
+  border: none;
+  color: #A78BFA;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.pc-notif-clear:hover { color: #7C3AED; }
+
+.pc-notif-list {
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.pc-notif-list::-webkit-scrollbar { width: 4px; }
+.pc-notif-list::-webkit-scrollbar-thumb { background: #3D3560; border-radius: 2px; }
+
+.pc-notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 2px;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+
+.pc-notif-item:hover { background: rgba(124,58,237,0.08); }
+
+.pc-notif-read { opacity: 0.5; }
+
+.pc-notif-critical { border-left: 3px solid #EF4444; }
+.pc-notif-urgent { border-left: 3px solid #F59E0B; }
+.pc-notif-warning { border-left: 3px solid #3B82F6; }
+
+.pc-notif-item-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+
+.pc-notif-item-content { flex: 1; min-width: 0; }
+
+.pc-notif-item-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #E4E4E7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pc-notif-item-message { font-size: 11px; color: #9CA3AF; margin-top: 2px; }
+
+.pc-notif-item-time { font-size: 10px; color: #6B7280; margin-top: 4px; }
+
+.pc-notif-item-color {
+  width: 4px;
+  height: 32px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.pc-notif-empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: #6B7280;
+  font-size: 13px;
+}
+
+.pc-notif-footer {
+  padding: 10px 18px;
+  border-top: 1px solid #3D3560;
+  font-size: 11px;
+  color: #6B7280;
+  text-align: center;
+}
+
+/* Popup notification */
+.pc-notif-popup {
+  position: fixed;
+  top: 20px;
+  right: 70px;
+  background: #2D2640;
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 999999;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transform: translateX(120%);
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  max-width: 350px;
+}
+
+.pc-notif-popup-show { transform: translateX(0); }
+
+.pc-notif-popup-critical { border: 2px solid #EF4444; }
+.pc-notif-popup-urgent { border: 2px solid #F59E0B; }
+
+.pc-notif-popup-icon { font-size: 24px; flex-shrink: 0; }
+
+.pc-notif-popup-title { font-size: 14px; font-weight: 600; color: #E4E4E7; }
+.pc-notif-popup-msg { font-size: 12px; color: #9CA3AF; margin-top: 2px; }
+
+/* Light mode */
+body:not([class*="pc-dark-"]) .pc-notif-bell { background: white; border-color: #E5E7EB; }
+body:not([class*="pc-dark-"]) .pc-notif-dropdown { background: white; border-color: #E5E7EB; box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
+body:not([class*="pc-dark-"]) .pc-notif-header { border-color: #E5E7EB; }
+body:not([class*="pc-dark-"]) .pc-notif-title { color: #1F2937; }
+body:not([class*="pc-dark-"]) .pc-notif-item-title { color: #1F2937; }
+body:not([class*="pc-dark-"]) .pc-notif-footer { border-color: #E5E7EB; }
+body:not([class*="pc-dark-"]) .pc-notif-popup { background: white; }
+body:not([class*="pc-dark-"]) .pc-notif-popup-title { color: #1F2937; }
