@@ -3462,3 +3462,240 @@ var PrettyGPA = {
   }
 
 })();
+/* ========================================
+   PRETTY CAMPUS - Canvas Wrapped
+   Spotify Wrapped style semester recap
+   Shareable cards for Instagram/TikTok
+   
+   BetterCampus has basic "Canvas Wraps"
+   but students want:
+   - Trends over time
+   - Gamification highlights  
+   - Shareable cards with watermark
+   - Personality type based on study habits
+   ======================================== */
+
+(function() {
+  'use strict';
+
+  function initWrapped() {
+    // Add Wrapped button to the page
+    if (document.getElementById('pc-wrapped-btn')) return;
+
+    var btn = document.createElement('button');
+    btn.id = 'pc-wrapped-btn';
+    btn.className = 'pc-wrapped-trigger';
+    btn.innerHTML = '&#127775; My Semester Wrapped';
+    btn.addEventListener('click', showWrapped);
+
+    // Insert near GPA widget or at top
+    var gpa = document.getElementById('pc-gpa-widget');
+    if (gpa) {
+      gpa.parentNode.insertBefore(btn, gpa);
+    } else {
+      var content = document.getElementById('content');
+      if (content) content.insertBefore(btn, content.firstChild);
+    }
+  }
+
+  function showWrapped() {
+    if (document.getElementById('pc-wrapped-overlay')) return;
+
+    chrome.storage.local.get([
+      'pcStreak', 'pcBadges', 'pcXP', 'pcTasks',
+      'pcFinalsState', 'pcStudyLog', 'pcCustomTasks'
+    ], function(data) {
+      var stats = gatherStats(data);
+      createWrappedOverlay(stats);
+    });
+  }
+
+  function gatherStats(data) {
+    var badges = data.pcBadges || {};
+    var tasks = data.pcTasks || {};
+    var streak = data.pcStreak || 0;
+    var xp = data.pcXP || 0;
+    var focusTime = (data.pcFinalsState && data.pcFinalsState.totalFocusTime) || 0;
+
+    var taskIds = Object.keys(tasks);
+    var completed = taskIds.filter(function(id) { return tasks[id].completed; }).length;
+    var total = taskIds.length || 10;
+
+    // Get courses from PrettyAPI
+    var courses = [];
+    if (typeof PrettyAPI !== 'undefined') {
+      courses = PrettyAPI.getMockCourses();
+    }
+
+    // Calculate personality
+    var personality = getStudyPersonality(streak, completed, total, focusTime, xp);
+
+    // Best course
+    var bestCourse = courses.length > 0 ? courses.reduce(function(a, b) { return a.percentage > b.percentage ? a : b; }) : null;
+    var worstCourse = courses.length > 0 ? courses.reduce(function(a, b) { return a.percentage < b.percentage ? a : b; }) : null;
+
+    // GPA
+    var gpa = 0;
+    if (typeof PrettyGPA !== 'undefined' && courses.length > 0) {
+      gpa = PrettyGPA.calculateGPA(courses);
+    }
+
+    return {
+      streak: streak,
+      badgesEarned: Object.keys(badges).length,
+      totalBadges: 16,
+      xp: xp,
+      completed: completed,
+      total: total,
+      focusMinutes: Math.floor(focusTime / 60),
+      courses: courses,
+      bestCourse: bestCourse,
+      worstCourse: worstCourse,
+      gpa: gpa,
+      personality: personality
+    };
+  }
+
+  function getStudyPersonality(streak, completed, total, focusTime, xp) {
+    var rate = total > 0 ? completed / total : 0;
+    var focusMins = focusTime / 60;
+
+    if (streak >= 14 && rate > 0.9) return { type: 'The Machine', emoji: '&#129302;', desc: 'Consistent, disciplined, unstoppable. You never miss a deadline and your streak proves it.' };
+    if (focusMins > 300 && rate > 0.7) return { type: 'Deep Thinker', emoji: '&#129504;', desc: 'You value quality over speed. Long focus sessions are your power move.' };
+    if (xp > 500 && rate > 0.8) return { type: 'Overachiever', emoji: '&#127942;', desc: 'Badges, XP, streaks... you collect them all. Your transcript reflects your dedication.' };
+    if (streak >= 7) return { type: 'Streak Hunter', emoji: '&#128293;', desc: 'That streak counter is your fuel. Missing a day is NOT an option.' };
+    if (rate > 0.9) return { type: 'Silent Grinder', emoji: '&#128170;', desc: 'You get things done without fanfare. Quietly excellent.' };
+    if (focusMins > 120) return { type: 'Night Owl Scholar', emoji: '&#129417;', desc: 'Late night study sessions are your jam. The library closes but you keep going.' };
+    return { type: 'Rising Star', emoji: '&#11088;', desc: 'Just getting started but already showing potential. Your best semester is ahead.' };
+  }
+
+  function createWrappedOverlay(stats) {
+    var overlay = document.createElement('div');
+    overlay.id = 'pc-wrapped-overlay';
+
+    var slides = buildSlides(stats);
+    var currentSlide = 0;
+
+    overlay.innerHTML =
+      '<div class="pc-wrapped-modal">' +
+        '<button class="pc-wrapped-close" id="pcWrappedClose">&#10005;</button>' +
+        '<div class="pc-wrapped-slides" id="pcWrappedSlides">' + slides[0] + '</div>' +
+        '<div class="pc-wrapped-nav">' +
+          '<button class="pc-wrapped-prev" id="pcWrappedPrev" style="visibility:hidden">&#8592; Back</button>' +
+          '<div class="pc-wrapped-dots" id="pcWrappedDots">' +
+            slides.map(function(_, i) { return '<span class="pc-wrapped-dot' + (i === 0 ? ' pc-wrapped-dot-active' : '') + '"></span>'; }).join('') +
+          '</div>' +
+          '<button class="pc-wrapped-next" id="pcWrappedNext">Next &#8594;</button>' +
+        '</div>' +
+        '<div class="pc-wrapped-watermark">Pretty Campus</div>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    // Navigation
+    var slidesEl = document.getElementById('pcWrappedSlides');
+    var prevBtn = document.getElementById('pcWrappedPrev');
+    var nextBtn = document.getElementById('pcWrappedNext');
+    var dots = document.querySelectorAll('.pc-wrapped-dot');
+
+    function showSlide(idx) {
+      currentSlide = idx;
+      slidesEl.innerHTML = slides[idx];
+      prevBtn.style.visibility = idx === 0 ? 'hidden' : 'visible';
+      nextBtn.textContent = idx === slides.length - 1 ? 'Close' : 'Next \u2192';
+      dots.forEach(function(d, i) { d.classList.toggle('pc-wrapped-dot-active', i === idx); });
+    }
+
+    nextBtn.addEventListener('click', function() {
+      if (currentSlide < slides.length - 1) showSlide(currentSlide + 1);
+      else closeWrapped();
+    });
+
+    prevBtn.addEventListener('click', function() {
+      if (currentSlide > 0) showSlide(currentSlide - 1);
+    });
+
+    document.getElementById('pcWrappedClose').addEventListener('click', closeWrapped);
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closeWrapped();
+    });
+  }
+
+  function closeWrapped() {
+    var overlay = document.getElementById('pc-wrapped-overlay');
+    if (overlay) overlay.remove();
+  }
+
+  function buildSlides(s) {
+    return [
+      // Slide 1: Intro
+      '<div class="pc-wrapped-slide pc-wrapped-gradient-1">' +
+        '<div class="pc-wrapped-slide-emoji">&#127891;</div>' +
+        '<h2 class="pc-wrapped-slide-title">Your Semester Wrapped</h2>' +
+        '<p class="pc-wrapped-slide-sub">Here\'s how you showed up this semester.</p>' +
+      '</div>',
+
+      // Slide 2: GPA
+      '<div class="pc-wrapped-slide pc-wrapped-gradient-2">' +
+        '<div class="pc-wrapped-slide-emoji">&#128200;</div>' +
+        '<div class="pc-wrapped-big-number">' + s.gpa.toFixed(2) + '</div>' +
+        '<h2 class="pc-wrapped-slide-title">Semester GPA</h2>' +
+        '<p class="pc-wrapped-slide-sub">' + s.courses.length + ' courses | ' + s.courses.reduce(function(sum, c) { return sum + c.credits; }, 0) + ' credits</p>' +
+      '</div>',
+
+      // Slide 3: Best course
+      '<div class="pc-wrapped-slide pc-wrapped-gradient-3">' +
+        '<div class="pc-wrapped-slide-emoji">&#127775;</div>' +
+        '<h2 class="pc-wrapped-slide-title">Top Course</h2>' +
+        '<div class="pc-wrapped-big-number">' + (s.bestCourse ? s.bestCourse.percentage + '%' : 'N/A') + '</div>' +
+        '<p class="pc-wrapped-slide-sub">' + (s.bestCourse ? s.bestCourse.name + ' - ' + s.bestCourse.title : '') + '</p>' +
+        (s.worstCourse ? '<p class="pc-wrapped-slide-note">Needs work: ' + s.worstCourse.name + ' (' + s.worstCourse.percentage + '%)</p>' : '') +
+      '</div>',
+
+      // Slide 4: Productivity
+      '<div class="pc-wrapped-slide pc-wrapped-gradient-4">' +
+        '<div class="pc-wrapped-slide-emoji">&#9889;</div>' +
+        '<h2 class="pc-wrapped-slide-title">Productivity Stats</h2>' +
+        '<div class="pc-wrapped-stats-row">' +
+          '<div class="pc-wrapped-stat"><div class="pc-wrapped-stat-val">' + s.completed + '</div><div class="pc-wrapped-stat-label">Tasks Done</div></div>' +
+          '<div class="pc-wrapped-stat"><div class="pc-wrapped-stat-val">' + s.focusMinutes + 'm</div><div class="pc-wrapped-stat-label">Focus Time</div></div>' +
+          '<div class="pc-wrapped-stat"><div class="pc-wrapped-stat-val">' + s.streak + '</div><div class="pc-wrapped-stat-label">Best Streak</div></div>' +
+        '</div>' +
+      '</div>',
+
+      // Slide 5: Achievements
+      '<div class="pc-wrapped-slide pc-wrapped-gradient-5">' +
+        '<div class="pc-wrapped-slide-emoji">&#127942;</div>' +
+        '<h2 class="pc-wrapped-slide-title">Achievement Report</h2>' +
+        '<div class="pc-wrapped-stats-row">' +
+          '<div class="pc-wrapped-stat"><div class="pc-wrapped-stat-val">' + s.badgesEarned + '/' + s.totalBadges + '</div><div class="pc-wrapped-stat-label">Badges</div></div>' +
+          '<div class="pc-wrapped-stat"><div class="pc-wrapped-stat-val">' + s.xp + '</div><div class="pc-wrapped-stat-label">Total XP</div></div>' +
+        '</div>' +
+      '</div>',
+
+      // Slide 6: Personality
+      '<div class="pc-wrapped-slide pc-wrapped-gradient-6">' +
+        '<div class="pc-wrapped-slide-emoji">' + s.personality.emoji + '</div>' +
+        '<p class="pc-wrapped-slide-sub">Your study personality is...</p>' +
+        '<h2 class="pc-wrapped-slide-title">' + s.personality.type + '</h2>' +
+        '<p class="pc-wrapped-slide-desc">' + s.personality.desc + '</p>' +
+      '</div>',
+
+      // Slide 7: Share
+      '<div class="pc-wrapped-slide pc-wrapped-gradient-1">' +
+        '<div class="pc-wrapped-slide-emoji">&#128248;</div>' +
+        '<h2 class="pc-wrapped-slide-title">Share Your Wrapped!</h2>' +
+        '<p class="pc-wrapped-slide-sub">Screenshot and share on Instagram, TikTok, or with friends.</p>' +
+        '<p class="pc-wrapped-slide-note">&#128640; prettycampus.com</p>' +
+      '</div>'
+    ];
+  }
+
+  // Initialize
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(initWrapped, 1300); });
+  } else {
+    setTimeout(initWrapped, 1300);
+  }
+
+})();
