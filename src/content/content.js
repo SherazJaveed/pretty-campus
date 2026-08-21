@@ -1,21 +1,13 @@
 /* ========================================
-   PRETTY CAMPUS v2.0.0 - Production Bundle
-   All-in-one Canvas LMS Enhancement Extension
-   10 Features | 41 Themes | 16 Badges
-   
-   Architecture (matches BetterCampus pattern):
-   - Single content.js (this file)
-   - Single content.css
-   - Canvas auto-detection on ALL domains
-   - document_start for no white flash
-   - storage permission only
+   PRETTY CAMPUS v3.0.0 - Clean Production Build
+   15 Features | 41 Themes | Mobile Responsive
+   All panels hidden by default, opened via dock
    ======================================== */
 
 (function() {
   'use strict';
 
   // ---- CANVAS DETECTION ----
-  // Like BetterCampus, we match https://*/* and detect Canvas dynamically
   function isCanvasPage() {
     var url = window.location.href;
     if (url.indexOf('.instructure.com') !== -1) return true;
@@ -32,7 +24,7 @@
     return false;
   }
 
-  // ---- EARLY DARK MODE (prevents white flash) ----
+  // ---- EARLY DARK MODE ----
   function injectEarlyDarkMode() {
     try {
       var saved = localStorage.getItem('pc_dark_theme');
@@ -41,144 +33,85 @@
   }
   injectEarlyDarkMode();
 
-  // ---- WAIT FOR DOM THEN INIT ----
+  // ---- INIT ----
   function onReady(fn) {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', fn);
-    } else {
-      fn();
-    }
+    } else { fn(); }
   }
 
   function initPrettyCampus() {
-    // Double-check Canvas detection after DOM loads
-    if (!isCanvasPage() && !isCanvasDOM()) {
-      console.log('Pretty Campus: Not a Canvas page, skipping.');
-      return;
-    }
+    if (!isCanvasPage() && !isCanvasDOM()) return;
+    console.log('Pretty Campus v3.0.0: Starting on ' + window.location.hostname);
 
-    console.log('Pretty Campus v2.0.0: Initializing on ' + window.location.hostname);
-
-    // Load settings and initialize all modules
-    chrome.storage.local.get([
-      'darkMode', 'darkTheme', 'followSystem', 'darkSchedule',
-      'pcTasks', 'pcStreak', 'pcStreakDate', 'pcCustomTasks',
-      'pcSortBy', 'pcFilterCourse', 'pcBadges', 'pcXP',
-      'pcThemeId', 'pcCustomTheme', 'pcNotifications', 'pcFinalsState'
-    ], function(data) {
+    // Load settings
+    chrome.storage.local.get(['darkMode', 'darkTheme', 'followSystem', 'darkSchedule'], function(data) {
       // Apply dark mode
-      initDarkMode(data);
-
-      // Initialize all features with delays to prevent blocking
-      setTimeout(function() { initCanvasAPI(); }, 100);
-      setTimeout(function() { initGPAWidget(data); }, 300);
-      setTimeout(function() { initTaskSidebar(data); }, 500);
-      setTimeout(function() { initAchievements(data); }, 700);
-      setTimeout(function() { initThemes(data); }, 200);
-      setTimeout(function() { initCommandPalette(); }, 400);
-      setTimeout(function() { initAutoSave(); }, 600);
-      setTimeout(function() { initFinalsMode(data); }, 800);
-      setTimeout(function() { initNotifications(data); }, 1000);
-      setTimeout(function() { addBadge(); }, 100);
-
-      console.log('Pretty Campus: All modules loaded.');
+      if (data.followSystem) {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) applyDark(data.darkTheme || 'midnight');
+      } else if (data.darkSchedule && data.darkSchedule.enabled) {
+        var h = new Date().getHours(), s = data.darkSchedule.start || 18, e = data.darkSchedule.end || 7;
+        if (s > e ? (h >= s || h < e) : (h >= s && h < e)) applyDark(data.darkTheme || 'midnight');
+      } else if (data.darkMode) {
+        applyDark(data.darkTheme || 'midnight');
+      }
     });
-  }
-
-  // ============================================================
-  // MODULE: DARK MODE + CONTENT SCRIPT
-  // ============================================================
-  function initDarkMode(data) {
-    // Apply saved dark mode
-    if (data.followSystem) {
-      var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (systemDark) applyDarkMode(data.darkTheme || 'midnight');
-    } else if (data.darkSchedule && data.darkSchedule.enabled) {
-      var hour = new Date().getHours();
-      var start = data.darkSchedule.start || 18;
-      var end = data.darkSchedule.end || 7;
-      var shouldBeDark = start > end ? (hour >= start || hour < end) : (hour >= start && hour < end);
-      if (shouldBeDark) applyDarkMode(data.darkTheme || 'midnight');
-    } else if (data.darkMode) {
-      applyDarkMode(data.darkTheme || 'midnight');
-    }
 
     // Listen for system theme changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
       chrome.storage.local.get(['followSystem', 'darkTheme'], function(d) {
-        if (d.followSystem) {
-          if (e.matches) applyDarkMode(d.darkTheme || 'midnight');
-          else removeDarkMode();
-        }
+        if (d.followSystem) { if (e.matches) applyDark(d.darkTheme || 'midnight'); else removeDark(); }
       });
     });
 
-    // Listen for messages from popup
-    chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-      if (request.action === 'toggleDark') {
-        if (request.enabled) applyDarkMode(request.theme);
-        else removeDarkMode();
+    // Message listener
+    chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
+      if (req.action === 'toggleDark') { if (req.enabled) applyDark(req.theme); else removeDark(); }
+      if (req.action === 'changeTheme') applyDark(req.theme);
+      if (req.action === 'followSystem') {
+        chrome.storage.local.get(['followSystem', 'darkTheme', 'darkSchedule', 'darkMode'], function(d) {
+          if (d.followSystem) { if (window.matchMedia('(prefers-color-scheme: dark)').matches) applyDark(d.darkTheme || 'midnight'); else removeDark(); }
+          else if (d.darkSchedule && d.darkSchedule.enabled) { var h=new Date().getHours(),s=d.darkSchedule.start||18,e=d.darkSchedule.end||7; if(s>e?(h>=s||h<e):(h>=s&&h<e)) applyDark(d.darkTheme||'midnight'); else removeDark(); }
+          else if (d.darkMode) applyDark(d.darkTheme||'midnight');
+        });
       }
-      if (request.action === 'changeTheme') applyDarkMode(request.theme);
-      if (request.action === 'followSystem') initDarkMode(request);
-      if (request.action === 'getStatus') {
-        sendResponse({ darkMode: document.documentElement.className.indexOf('pc-dark-') !== -1, url: window.location.href });
-      }
+      if (req.action === 'getStatus') sendResponse({darkMode: document.documentElement.className.indexOf('pc-dark-') !== -1});
       return true;
     });
 
-    // Keyboard shortcuts
+    // Keyboard: Alt+D dark mode
     document.addEventListener('keydown', function(e) {
-      // Alt+D: Toggle dark mode
       if (e.altKey && e.key === 'd') {
         e.preventDefault();
         chrome.storage.local.get(['darkMode', 'darkTheme'], function(d) {
-          var newState = !d.darkMode;
-          var theme = d.darkTheme || 'midnight';
-          chrome.storage.local.set({ darkMode: newState, followSystem: false, darkSchedule: { enabled: false } });
-          if (newState) applyDarkMode(theme);
-          else removeDarkMode();
+          var n = !d.darkMode;
+          chrome.storage.local.set({darkMode: n, followSystem: false, darkSchedule: {enabled: false}});
+          if (n) applyDark(d.darkTheme || 'midnight'); else removeDark();
         });
       }
     });
 
-    console.log('Pretty Campus: Dark mode ready (Alt+D to toggle)');
+    console.log('Pretty Campus: Core loaded');
   }
 
-  function applyDarkMode(theme) {
+  function applyDark(theme) {
     document.documentElement.classList.remove('pc-dark-amoled', 'pc-dark-midnight', 'pc-dark-warm');
     document.documentElement.classList.add('pc-dark-' + theme);
     try { localStorage.setItem('pc_dark_theme', theme); } catch(e) {}
   }
 
-  function removeDarkMode() {
+  function removeDark() {
     document.documentElement.classList.remove('pc-dark-amoled', 'pc-dark-midnight', 'pc-dark-warm');
     try { localStorage.removeItem('pc_dark_theme'); } catch(e) {}
   }
 
-  function addBadge() {
-    if (document.querySelector('.pc-badge')) return;
-    var badge = document.createElement('div');
-    badge.className = 'pc-badge';
-    badge.textContent = 'Pretty Campus';
-    badge.title = 'Alt+D: dark mode | Alt+T: themes | Alt+F: finals | Ctrl+K: commands';
-    badge.style.cssText = 'position:fixed;bottom:12px;right:12px;background:#7C3AED;color:white;padding:4px 12px;border-radius:16px;font-size:11px;font-family:-apple-system,sans-serif;z-index:99999;cursor:pointer;opacity:0.8;transition:opacity 0.2s;';
-    badge.addEventListener('mouseenter', function() { badge.style.opacity = '1'; });
-    badge.addEventListener('mouseleave', function() { badge.style.opacity = '0.8'; });
-    badge.addEventListener('click', function() {
-      chrome.storage.local.get(['darkMode', 'darkTheme'], function(d) {
-        var newState = !d.darkMode;
-        chrome.storage.local.set({ darkMode: newState });
-        if (newState) applyDarkMode(d.darkTheme || 'midnight');
-        else removeDarkMode();
-      });
-    });
-    document.body.appendChild(badge);
-  }
+  if (isCanvasPage()) { onReady(initPrettyCampus); }
+  else { onReady(function() { if (isCanvasDOM()) initPrettyCampus(); }); }
 
-  // ============================================================
-  // MODULE: CANVAS API
-  // ============================================================
+})();
+
+
+// ============ MODULE: CANVAS-API ============
 /* ========================================
    PRETTY CAMPUS - Canvas API Integration
    Fetches real data from Canvas REST API
@@ -484,14 +417,7 @@ var PrettyAPI = (function() {
 })();
 
 
-  function initCanvasAPI() {
-    // API initializes itself
-    console.log('Pretty Campus: Canvas API ready (DEV_MODE: ' + PrettyAPI.isDevMode() + ')');
-  }
-
-  // ============================================================
-  // MODULE: GPA CALCULATOR
-  // ============================================================
+// ============ MODULE: GPA-CALCULATOR ============
 /* ========================================
    PRETTY CAMPUS - GPA Calculator Engine v2
    Now uses PrettyAPI for real/mock data
@@ -589,9 +515,7 @@ var PrettyGPA = {
 };
 
 
-  // ============================================================
-  // MODULE: GPA WIDGET
-  // ============================================================
+// ============ MODULE: GPA-WIDGET-FIXED ============
 /* ========================================
    PRETTY CAMPUS - GPA Widget v2 (Fixed)
    Handles missing assignments data gracefully
@@ -778,13 +702,7 @@ var PrettyGPA = {
 })();
 
 
-  function initGPAWidget(data) {
-    // GPA widget initializes itself via setTimeout in its IIFE
-  }
-
-  // ============================================================
-  // MODULE: TASK SIDEBAR
-  // ============================================================
+// ============ MODULE: TASK-SIDEBAR ============
 /* ========================================
    PRETTY CAMPUS - Task Sidebar with Progress Rings
    Features: Weekly view, color-coded courses, 
@@ -1251,13 +1169,7 @@ var PrettyGPA = {
 })();
 
 
-  function initTaskSidebar(data) {
-    // Task sidebar initializes itself
-  }
-
-  // ============================================================
-  // MODULE: ACHIEVEMENTS
-  // ============================================================
+// ============ MODULE: ACHIEVEMENTS ============
 /* ========================================
    PRETTY CAMPUS - Achievement Badges + XP System
    Duolingo-inspired gamification for Canvas
@@ -1525,13 +1437,7 @@ var PrettyGPA = {
 })();
 
 
-  function initAchievements(data) {
-    // Achievements initializes itself
-  }
-
-  // ============================================================
-  // MODULE: THEMES
-  // ============================================================
+// ============ MODULE: THEMES ============
 /* ========================================
    PRETTY CAMPUS - Theme System
    30 University themes + 8 aesthetic themes
@@ -1686,26 +1592,7 @@ var PrettyGPA = {
 })();
 
 
-  function initThemes(data) {
-    // Themes initializes itself
-    // Add Alt+T shortcut for theme cycling
-    var themeList = ['ohio-state','nyu','ucla','stanford','mit','ocean','forest','sunset','rose','lavender','midnight'];
-    document.addEventListener('keydown', function(e) {
-      if (e.altKey && e.key === 't') {
-        e.preventDefault();
-        var current = window._pcThemeIdx || 0;
-        if (typeof PrettyThemes !== 'undefined') {
-          PrettyThemes.apply(themeList[current]);
-          console.log('Pretty Campus: Theme -> ' + themeList[current]);
-          window._pcThemeIdx = (current + 1) % themeList.length;
-        }
-      }
-    });
-  }
-
-  // ============================================================
-  // MODULE: COMMAND PALETTE
-  // ============================================================
+// ============ MODULE: COMMAND-PALETTE ============
 /* ========================================
    PRETTY CAMPUS - Command Palette (Ctrl+K)
    Spotlight-style quick navigation for Canvas
@@ -1968,13 +1855,7 @@ var PrettyGPA = {
 })();
 
 
-  function initCommandPalette() {
-    // Command palette initializes itself with Ctrl+K listener
-  }
-
-  // ============================================================
-  // MODULE: AUTO-SAVE
-  // ============================================================
+// ============ MODULE: AUTO-SAVE ============
 /* ========================================
    PRETTY CAMPUS - Auto-Save System
    Saves discussion posts, assignment text,
@@ -2298,13 +2179,7 @@ var PrettyGPA = {
 })();
 
 
-  function initAutoSave() {
-    // Auto-save initializes itself
-  }
-
-  // ============================================================
-  // MODULE: FINALS MODE
-  // ============================================================
+// ============ MODULE: FINALS-MODE ============
 /* ========================================
    PRETTY CAMPUS - Finals Mode
    Pomodoro timer + site blocker + focus mode
@@ -2742,13 +2617,7 @@ var PrettyGPA = {
 })();
 
 
-  function initFinalsMode(data) {
-    // Finals mode initializes itself
-  }
-
-  // ============================================================
-  // MODULE: NOTIFICATIONS
-  // ============================================================
+// ============ MODULE: NOTIFICATIONS ============
 /* ========================================
    PRETTY CAMPUS - Smart Notifications
    Deadline alerts, grade changes, weekly digest
@@ -2958,23 +2827,7 @@ var PrettyGPA = {
 })();
 
 
-  function initNotifications(data) {
-    // Notifications initializes itself
-  }
-
-  // ============================================================
-  // BOOT
-  // ============================================================
-  if (isCanvasPage()) {
-    onReady(initPrettyCampus);
-  } else {
-    // For custom domains, wait for DOM and check again
-    onReady(function() {
-      if (isCanvasDOM()) initPrettyCampus();
-    });
-  }
-
-})();
+// ============ MODULE: DASHBOARD-NOTES ============
 /* ========================================
    PRETTY CAMPUS - Dashboard Notes + Grade Export
    Quick sticky notes on Canvas dashboard +
@@ -3226,6 +3079,9 @@ var PrettyGPA = {
   }
 
 })();
+
+
+// ============ MODULE: STUDY-STATS ============
 /* ========================================
    PRETTY CAMPUS - Study Stats Dashboard
    Weekly/monthly analytics + study patterns
@@ -3462,6 +3318,9 @@ var PrettyGPA = {
   }
 
 })();
+
+
+// ============ MODULE: CANVAS-WRAPPED ============
 /* ========================================
    PRETTY CAMPUS - Canvas Wrapped
    Spotify Wrapped style semester recap
@@ -3699,6 +3558,9 @@ var PrettyGPA = {
   }
 
 })();
+
+
+// ============ MODULE: FOCUS-SOUNDS ============
 /* ========================================
    PRETTY CAMPUS - Focus Sounds
    Ambient study sounds using Web Audio API
@@ -3985,6 +3847,9 @@ var PrettyGPA = {
   }
 
 })();
+
+
+// ============ MODULE: DASHBOARD-CUSTOMIZER ============
 /* ========================================
    PRETTY CAMPUS - Dashboard Customizer
    4 features that BetterCampus has:
@@ -4248,12 +4113,11 @@ var PrettyGPA = {
   }
 
 })();
-/* ========================================
-   PRETTY CAMPUS - Floating Dock Controller
-   Central hub to toggle all feature panels
-   Replaces scattered floating buttons
-   ======================================== */
 
+
+
+// ============ MODULE: DOCK CONTROLLER V2 ============
+/* PRETTY CAMPUS - Dock Controller v2 (uses class toggling, not style.display) */
 (function() {
   'use strict';
 
@@ -4264,97 +4128,63 @@ var PrettyGPA = {
     dock.id = 'pc-dock';
 
     var buttons = [
-      { id: 'dock-gpa', emoji: '&#128200;', tip: 'GPA Calculator', target: 'pc-gpa-widget' },
-      { id: 'dock-tasks', emoji: '&#128203;', tip: 'Task Sidebar', target: 'pc-task-wrapper' },
-      { id: 'dock-badges', emoji: '&#127942;', tip: 'Achievements', target: 'pc-achievements-panel' },
+      { id: 'dock-gpa', emoji: '&#128200;', tip: 'GPA', target: 'pc-gpa-widget' },
+      { id: 'dock-tasks', emoji: '&#128203;', tip: 'Tasks', target: 'pc-task-wrapper' },
+      { id: 'dock-badges', emoji: '&#127942;', tip: 'Badges', target: 'pc-achievements-panel' },
       { id: 'dock-notes', emoji: '&#128221;', tip: 'Notes', target: 'pc-notes-widget' },
-      { id: 'dock-stats', emoji: '&#128200;', tip: 'Study Stats', target: 'pc-stats-dashboard' },
-      { id: 'dock-finals', emoji: '&#127891;', tip: 'Finals Mode', action: 'toggleFinals' },
-      { id: 'dock-sounds', emoji: '&#127911;', tip: 'Focus Sounds', action: 'toggleSounds' },
-      { id: 'dock-custom', emoji: '&#127912;', tip: 'Customizer', action: 'toggleCustomizer' },
-      { id: 'dock-dark', emoji: '&#127769;', tip: 'Dark Mode (Alt+D)', action: 'toggleDark' }
+      { id: 'dock-stats', emoji: '&#128202;', tip: 'Stats', target: 'pc-stats-dashboard' },
+      { id: 'dock-finals', emoji: '&#127891;', tip: 'Focus', popup: 'pcFmBody' },
+      { id: 'dock-sounds', emoji: '&#127911;', tip: 'Sounds', popup: 'pcSoundsPanel' },
+      { id: 'dock-custom', emoji: '&#127912;', tip: 'Style', popup: 'pcCustPanel' },
+      { id: 'dock-dark', emoji: '&#127769;', tip: 'Dark', action: 'dark' }
     ];
 
-    var html = buttons.map(function(btn) {
-      return '<button class="pc-dock-btn" id="' + btn.id + '" data-target="' + (btn.target || '') + '" data-action="' + (btn.action || '') + '">' +
-        btn.emoji +
-        '<span class="pc-dock-tooltip">' + btn.tip + '</span>' +
-      '</button>';
+    dock.innerHTML = buttons.map(function(b) {
+      return '<button class="pc-dock-btn" id="' + b.id + '" data-target="' + (b.target||'') + '" data-popup="' + (b.popup||'') + '" data-action="' + (b.action||'') + '" title="' + b.tip + '">' + b.emoji + '</button>';
     }).join('');
 
-    dock.innerHTML = html;
     document.body.appendChild(dock);
 
-    // Panel toggle buttons
+    // Handle clicks
     dock.querySelectorAll('.pc-dock-btn').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        var targetId = btn.dataset.target;
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var target = btn.dataset.target;
+        var popup = btn.dataset.popup;
         var action = btn.dataset.action;
 
-        if (targetId) {
-          // Toggle panel visibility
-          var panel = document.getElementById(targetId);
-          if (panel) {
-            var isExpanded = panel.classList.contains('pc-expanded');
-            // Close all panels first
-            closeAllPanels();
-            // Open this one if it was closed
-            if (!isExpanded) {
-              panel.classList.add('pc-expanded');
-              btn.classList.add('pc-dock-active');
-              if (targetId === 'pc-task-wrapper') {
-                document.body.classList.add('pc-sidebar-open');
-              }
-            }
+        if (target) {
+          var panel = document.getElementById(target);
+          if (!panel) return;
+          var wasOpen = panel.classList.contains('pc-expanded');
+          closeAll();
+          if (!wasOpen) {
+            panel.classList.add('pc-expanded');
+            btn.classList.add('pc-dock-active');
           }
         }
 
-        if (action === 'toggleFinals') {
-          var fmBody = document.getElementById('pcFmBody');
-          if (fmBody) {
-            var vis = fmBody.style.display !== 'none';
-            closeAllPopups();
-            if (!vis) {
-              fmBody.style.display = 'block';
-              btn.classList.add('pc-dock-active');
-            }
+        if (popup) {
+          var el = document.getElementById(popup);
+          if (!el) return;
+          var wasShow = el.classList.contains('pc-show');
+          closeAllPopups();
+          if (!wasShow) {
+            el.classList.add('pc-show');
+            btn.classList.add('pc-dock-active');
           }
         }
 
-        if (action === 'toggleSounds') {
-          var spanel = document.getElementById('pcSoundsPanel');
-          if (spanel) {
-            var vis2 = spanel.style.display !== 'none';
-            closeAllPopups();
-            if (!vis2) {
-              spanel.style.display = 'block';
+        if (action === 'dark') {
+          chrome.storage.local.get(['darkMode', 'darkTheme'], function(d) {
+            var n = !d.darkMode;
+            var t = d.darkTheme || 'midnight';
+            chrome.storage.local.set({darkMode: n, followSystem: false});
+            document.documentElement.classList.remove('pc-dark-amoled','pc-dark-midnight','pc-dark-warm');
+            if (n) {
+              document.documentElement.classList.add('pc-dark-' + t);
               btn.classList.add('pc-dock-active');
-            }
-          }
-        }
-
-        if (action === 'toggleCustomizer') {
-          var cpanel = document.getElementById('pcCustPanel');
-          if (cpanel) {
-            var vis3 = cpanel.style.display !== 'none';
-            closeAllPopups();
-            if (!vis3) {
-              cpanel.style.display = 'block';
-              btn.classList.add('pc-dock-active');
-            }
-          }
-        }
-
-        if (action === 'toggleDark') {
-          chrome.storage.local.get(['darkMode', 'darkTheme'], function(data) {
-            var newState = !data.darkMode;
-            var theme = data.darkTheme || 'midnight';
-            chrome.storage.local.set({ darkMode: newState, followSystem: false });
-            document.documentElement.classList.remove('pc-dark-amoled', 'pc-dark-midnight', 'pc-dark-warm');
-            if (newState) {
-              document.documentElement.classList.add('pc-dark-' + theme);
-              btn.classList.add('pc-dock-active');
-              try { localStorage.setItem('pc_dark_theme', theme); } catch(e) {}
+              try { localStorage.setItem('pc_dark_theme', t); } catch(e) {}
             } else {
               btn.classList.remove('pc-dock-active');
               try { localStorage.removeItem('pc_dark_theme'); } catch(e) {}
@@ -4364,61 +4194,44 @@ var PrettyGPA = {
       });
     });
 
-    // Set initial dark mode button state
+    // Set dark mode button initial state
     if (document.documentElement.className.indexOf('pc-dark-') !== -1) {
-      var darkBtn = document.getElementById('dock-dark');
-      if (darkBtn) darkBtn.classList.add('pc-dock-active');
+      var db = document.getElementById('dock-dark');
+      if (db) db.classList.add('pc-dock-active');
     }
+
+    // Close on outside click
+    document.addEventListener('click', function(e) {
+      var d = document.getElementById('pc-dock');
+      if (!d || d.contains(e.target)) return;
+      var inside = false;
+      ['pc-gpa-widget','pc-task-wrapper','pc-achievements-panel','pc-notes-widget','pc-stats-dashboard','pc-finals-panel','pc-sounds-widget','pc-customizer'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el && el.contains(e.target)) inside = true;
+      });
+      if (!inside) { closeAll(); closeAllPopups(); }
+    });
   }
 
-  function closeAllPanels() {
-    var panels = ['pc-gpa-widget', 'pc-task-wrapper', 'pc-achievements-panel', 'pc-notes-widget', 'pc-stats-dashboard'];
-    panels.forEach(function(id) {
+  function closeAll() {
+    ['pc-gpa-widget','pc-task-wrapper','pc-achievements-panel','pc-notes-widget','pc-stats-dashboard'].forEach(function(id) {
       var el = document.getElementById(id);
       if (el) el.classList.remove('pc-expanded');
     });
-    document.body.classList.remove('pc-sidebar-open');
-    // Remove active state from panel buttons
-    var dockBtns = document.querySelectorAll('.pc-dock-btn[data-target]');
-    dockBtns.forEach(function(btn) { btn.classList.remove('pc-dock-active'); });
+    document.querySelectorAll('.pc-dock-btn[data-target]').forEach(function(b) { b.classList.remove('pc-dock-active'); });
   }
 
   function closeAllPopups() {
-    var popups = ['pcFmBody', 'pcSoundsPanel', 'pcCustPanel'];
-    popups.forEach(function(id) {
+    ['pcFmBody','pcSoundsPanel','pcCustPanel'].forEach(function(id) {
       var el = document.getElementById(id);
-      if (el) el.style.display = 'none';
+      if (el) el.classList.remove('pc-show');
     });
-    // Remove active state from action buttons
-    var dockBtns = document.querySelectorAll('.pc-dock-btn[data-action]');
-    dockBtns.forEach(function(btn) {
-      if (btn.dataset.action !== 'toggleDark') btn.classList.remove('pc-dock-active');
-    });
+    document.querySelectorAll('.pc-dock-btn[data-popup]').forEach(function(b) { b.classList.remove('pc-dock-active'); });
   }
 
-  // Close panels when clicking outside
-  document.addEventListener('click', function(e) {
-    var dock = document.getElementById('pc-dock');
-    if (!dock) return;
-
-    var clickedInsidePanel = false;
-    var panelIds = ['pc-gpa-widget', 'pc-task-wrapper', 'pc-achievements-panel', 'pc-notes-widget', 'pc-stats-dashboard', 'pc-finals-panel', 'pc-sounds-widget', 'pc-customizer'];
-    panelIds.forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el && el.contains(e.target)) clickedInsidePanel = true;
-    });
-
-    if (!dock.contains(e.target) && !clickedInsidePanel) {
-      closeAllPanels();
-      closeAllPopups();
-    }
-  });
-
-  // Initialize after all other modules
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() { setTimeout(initDock, 2000); });
   } else {
     setTimeout(initDock, 2000);
   }
-
 })();
