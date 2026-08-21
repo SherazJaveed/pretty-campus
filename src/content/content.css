@@ -2943,3 +2943,353 @@ body:not([class*="pc-dark-"]) .pc-cust-header { color: #1F2937; background: rgba
 body:not([class*="pc-dark-"]) .pc-cust-option { background: #F9FAFB; color: #4B5563; }
 body:not([class*="pc-dark-"]) .pc-cust-toggle-row { color: #4B5563; }
 body:not([class*="pc-dark-"]) .pc-cust-section { border-color: #E5E7EB; }
+/* ========================================
+   PRETTY CAMPUS - Layout Controller
+   Fixes: panels covering Canvas content
+   All panels collapsed by default except
+   dark mode and small indicators.
+   Mobile responsive.
+   ======================================== */
+
+/* ============================================================
+   RULE 1: GPA Widget - collapsed by default, click to expand
+   ============================================================ */
+#pc-gpa-widget {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  margin: 0;
+  border: none;
+}
+
+#pc-gpa-widget.pc-expanded {
+  max-height: 2000px;
+  margin: 0 0 16px 0;
+  border: 1px solid #3D3560;
+}
+
+/* ============================================================
+   RULE 2: Achievements - collapsed by default
+   ============================================================ */
+#pc-achievements-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  margin: 0;
+  border: none;
+}
+
+#pc-achievements-panel.pc-expanded {
+  max-height: 2000px;
+  margin: 0 0 16px 0;
+  border: 1px solid #3D3560;
+}
+
+/* ============================================================
+   RULE 3: Notes widget - collapsed by default
+   ============================================================ */
+#pc-notes-widget {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  margin: 0;
+  border: none;
+}
+
+#pc-notes-widget.pc-expanded {
+  max-height: 2000px;
+  margin: 0 0 16px 0;
+  border: 1px solid #3D3560;
+}
+
+/* ============================================================
+   RULE 4: Stats dashboard - collapsed by default
+   ============================================================ */
+#pc-stats-dashboard {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  margin: 0;
+  border: none;
+}
+
+#pc-stats-dashboard.pc-expanded {
+  max-height: 2000px;
+  margin: 0 0 16px 0;
+  border: 1px solid #3D3560;
+}
+
+/* ============================================================
+   RULE 5: Canvas Wrapped button - always visible but compact
+   ============================================================ */
+.pc-wrapped-trigger {
+  padding: 10px 16px;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+/* ============================================================
+   RULE 6: Task sidebar - slide in/out, hidden by default
+   ============================================================ */
+#pc-task-wrapper {
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+#pc-task-wrapper.pc-expanded {
+  transform: translateX(0);
+}
+
+/* Don't push page content when sidebar is hidden */
+#content {
+  margin-right: 0 !important;
+  transition: margin-right 0.3s ease;
+}
+
+#pc-task-wrapper.pc-expanded ~ #content,
+body.pc-sidebar-open #content {
+  margin-right: 340px !important;
+}
+
+/* ============================================================
+   RULE 7: Floating dock - always visible, controls everything
+   ============================================================ */
+#pc-dock {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  padding: 6px 10px;
+  background: #2D2640;
+  border: 1px solid #3D3560;
+  border-radius: 24px;
+  z-index: 99995;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.pc-dock-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.pc-dock-btn:hover {
+  background: rgba(124, 58, 237, 0.2);
+  transform: scale(1.1);
+}
+
+.pc-dock-btn.pc-dock-active {
+  background: #7C3AED;
+  border-radius: 50%;
+}
+
+.pc-dock-btn title { display: none; }
+
+.pc-dock-tooltip {
+  display: none;
+  position: absolute;
+  bottom: 44px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1E1B2E;
+  color: #E4E4E7;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  white-space: nowrap;
+  border: 1px solid #3D3560;
+  pointer-events: none;
+}
+
+.pc-dock-btn:hover .pc-dock-tooltip {
+  display: block;
+}
+
+/* ============================================================
+   RULE 8: Hide individual floating buttons (replaced by dock)
+   ============================================================ */
+.pc-fm-toggle,
+#pc-sounds-widget .pc-sounds-toggle,
+#pc-customizer > .pc-cust-toggle {
+  display: none !important;
+}
+
+/* Finals Mode panel anchored to dock */
+.pc-fm-body {
+  bottom: 70px !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+}
+
+/* Sounds panel anchored to dock */
+.pc-sounds-panel {
+  bottom: 70px !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+}
+
+/* Customizer panel anchored to dock */
+.pc-cust-panel {
+  bottom: 70px !important;
+  right: auto !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+}
+
+/* ============================================================
+   RULE 9: Pretty Campus badge - replace with dock
+   ============================================================ */
+.pc-badge {
+  display: none !important;
+}
+
+/* ============================================================
+   RULE 10: Auto-save indicator - compact, top-right
+   ============================================================ */
+.pc-save-indicator {
+  bottom: auto !important;
+  top: 60px;
+  right: 16px;
+  font-size: 10px;
+  padding: 4px 10px;
+  opacity: 0.6;
+}
+
+/* ============================================================
+   RULE 11: Notification center - keep top right
+   ============================================================ */
+#pc-notif-center {
+  top: 8px;
+  right: 60px;
+}
+
+/* ============================================================
+   MOBILE RESPONSIVE
+   ============================================================ */
+
+/* Tablet */
+@media (max-width: 768px) {
+  #pc-dock {
+    bottom: 8px;
+    padding: 4px 8px;
+    gap: 2px;
+  }
+
+  .pc-dock-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  #pc-task-wrapper {
+    width: 100vw !important;
+  }
+
+  #pc-task-wrapper.pc-expanded ~ #content,
+  body.pc-sidebar-open #content {
+    margin-right: 0 !important;
+  }
+
+  .pc-fm-body, .pc-sounds-panel, .pc-cust-panel {
+    width: 90vw !important;
+    left: 5vw !important;
+    transform: none !important;
+  }
+
+  #pc-notif-center {
+    right: 8px;
+  }
+
+  .pc-notif-dropdown {
+    width: 90vw !important;
+    right: 0 !important;
+  }
+
+  #pc-gpa-widget.pc-expanded {
+    margin: 0 0 12px 0;
+  }
+
+  .pc-gpa-overview {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .pc-gpa-number { font-size: 36px; }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  #pc-dock {
+    bottom: 4px;
+    padding: 3px 6px;
+    gap: 1px;
+    border-radius: 20px;
+  }
+
+  .pc-dock-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .pc-fm-body, .pc-sounds-panel, .pc-cust-panel {
+    width: 95vw !important;
+    left: 2.5vw !important;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .pc-notif-dropdown {
+    width: 95vw !important;
+  }
+
+  .pc-gpa-number { font-size: 28px; }
+  .pc-gpa-stats { gap: 16px; }
+  .pc-gpa-stat-value { font-size: 16px; }
+
+  .pc-badge-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  .pc-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .pc-wrapped-modal {
+    width: 95vw !important;
+  }
+
+  .pc-wrapped-big-number { font-size: 40px; }
+}
+
+/* ============================================================
+   LIGHT MODE DOCK
+   ============================================================ */
+body:not([class*="pc-dark-"]) #pc-dock {
+  background: white;
+  border-color: #E5E7EB;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+body:not([class*="pc-dark-"]) .pc-dock-btn:hover {
+  background: rgba(124, 58, 237, 0.1);
+}
+
+body:not([class*="pc-dark-"]) .pc-dock-tooltip {
+  background: white;
+  color: #1F2937;
+  border-color: #E5E7EB;
+}

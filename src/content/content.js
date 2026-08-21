@@ -4248,3 +4248,177 @@ var PrettyGPA = {
   }
 
 })();
+/* ========================================
+   PRETTY CAMPUS - Floating Dock Controller
+   Central hub to toggle all feature panels
+   Replaces scattered floating buttons
+   ======================================== */
+
+(function() {
+  'use strict';
+
+  function initDock() {
+    if (document.getElementById('pc-dock')) return;
+
+    var dock = document.createElement('div');
+    dock.id = 'pc-dock';
+
+    var buttons = [
+      { id: 'dock-gpa', emoji: '&#128200;', tip: 'GPA Calculator', target: 'pc-gpa-widget' },
+      { id: 'dock-tasks', emoji: '&#128203;', tip: 'Task Sidebar', target: 'pc-task-wrapper' },
+      { id: 'dock-badges', emoji: '&#127942;', tip: 'Achievements', target: 'pc-achievements-panel' },
+      { id: 'dock-notes', emoji: '&#128221;', tip: 'Notes', target: 'pc-notes-widget' },
+      { id: 'dock-stats', emoji: '&#128200;', tip: 'Study Stats', target: 'pc-stats-dashboard' },
+      { id: 'dock-finals', emoji: '&#127891;', tip: 'Finals Mode', action: 'toggleFinals' },
+      { id: 'dock-sounds', emoji: '&#127911;', tip: 'Focus Sounds', action: 'toggleSounds' },
+      { id: 'dock-custom', emoji: '&#127912;', tip: 'Customizer', action: 'toggleCustomizer' },
+      { id: 'dock-dark', emoji: '&#127769;', tip: 'Dark Mode (Alt+D)', action: 'toggleDark' }
+    ];
+
+    var html = buttons.map(function(btn) {
+      return '<button class="pc-dock-btn" id="' + btn.id + '" data-target="' + (btn.target || '') + '" data-action="' + (btn.action || '') + '">' +
+        btn.emoji +
+        '<span class="pc-dock-tooltip">' + btn.tip + '</span>' +
+      '</button>';
+    }).join('');
+
+    dock.innerHTML = html;
+    document.body.appendChild(dock);
+
+    // Panel toggle buttons
+    dock.querySelectorAll('.pc-dock-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var targetId = btn.dataset.target;
+        var action = btn.dataset.action;
+
+        if (targetId) {
+          // Toggle panel visibility
+          var panel = document.getElementById(targetId);
+          if (panel) {
+            var isExpanded = panel.classList.contains('pc-expanded');
+            // Close all panels first
+            closeAllPanels();
+            // Open this one if it was closed
+            if (!isExpanded) {
+              panel.classList.add('pc-expanded');
+              btn.classList.add('pc-dock-active');
+              if (targetId === 'pc-task-wrapper') {
+                document.body.classList.add('pc-sidebar-open');
+              }
+            }
+          }
+        }
+
+        if (action === 'toggleFinals') {
+          var fmBody = document.getElementById('pcFmBody');
+          if (fmBody) {
+            var vis = fmBody.style.display !== 'none';
+            closeAllPopups();
+            if (!vis) {
+              fmBody.style.display = 'block';
+              btn.classList.add('pc-dock-active');
+            }
+          }
+        }
+
+        if (action === 'toggleSounds') {
+          var spanel = document.getElementById('pcSoundsPanel');
+          if (spanel) {
+            var vis2 = spanel.style.display !== 'none';
+            closeAllPopups();
+            if (!vis2) {
+              spanel.style.display = 'block';
+              btn.classList.add('pc-dock-active');
+            }
+          }
+        }
+
+        if (action === 'toggleCustomizer') {
+          var cpanel = document.getElementById('pcCustPanel');
+          if (cpanel) {
+            var vis3 = cpanel.style.display !== 'none';
+            closeAllPopups();
+            if (!vis3) {
+              cpanel.style.display = 'block';
+              btn.classList.add('pc-dock-active');
+            }
+          }
+        }
+
+        if (action === 'toggleDark') {
+          chrome.storage.local.get(['darkMode', 'darkTheme'], function(data) {
+            var newState = !data.darkMode;
+            var theme = data.darkTheme || 'midnight';
+            chrome.storage.local.set({ darkMode: newState, followSystem: false });
+            document.documentElement.classList.remove('pc-dark-amoled', 'pc-dark-midnight', 'pc-dark-warm');
+            if (newState) {
+              document.documentElement.classList.add('pc-dark-' + theme);
+              btn.classList.add('pc-dock-active');
+              try { localStorage.setItem('pc_dark_theme', theme); } catch(e) {}
+            } else {
+              btn.classList.remove('pc-dock-active');
+              try { localStorage.removeItem('pc_dark_theme'); } catch(e) {}
+            }
+          });
+        }
+      });
+    });
+
+    // Set initial dark mode button state
+    if (document.documentElement.className.indexOf('pc-dark-') !== -1) {
+      var darkBtn = document.getElementById('dock-dark');
+      if (darkBtn) darkBtn.classList.add('pc-dock-active');
+    }
+  }
+
+  function closeAllPanels() {
+    var panels = ['pc-gpa-widget', 'pc-task-wrapper', 'pc-achievements-panel', 'pc-notes-widget', 'pc-stats-dashboard'];
+    panels.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.remove('pc-expanded');
+    });
+    document.body.classList.remove('pc-sidebar-open');
+    // Remove active state from panel buttons
+    var dockBtns = document.querySelectorAll('.pc-dock-btn[data-target]');
+    dockBtns.forEach(function(btn) { btn.classList.remove('pc-dock-active'); });
+  }
+
+  function closeAllPopups() {
+    var popups = ['pcFmBody', 'pcSoundsPanel', 'pcCustPanel'];
+    popups.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+    // Remove active state from action buttons
+    var dockBtns = document.querySelectorAll('.pc-dock-btn[data-action]');
+    dockBtns.forEach(function(btn) {
+      if (btn.dataset.action !== 'toggleDark') btn.classList.remove('pc-dock-active');
+    });
+  }
+
+  // Close panels when clicking outside
+  document.addEventListener('click', function(e) {
+    var dock = document.getElementById('pc-dock');
+    if (!dock) return;
+
+    var clickedInsidePanel = false;
+    var panelIds = ['pc-gpa-widget', 'pc-task-wrapper', 'pc-achievements-panel', 'pc-notes-widget', 'pc-stats-dashboard', 'pc-finals-panel', 'pc-sounds-widget', 'pc-customizer'];
+    panelIds.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && el.contains(e.target)) clickedInsidePanel = true;
+    });
+
+    if (!dock.contains(e.target) && !clickedInsidePanel) {
+      closeAllPanels();
+      closeAllPopups();
+    }
+  });
+
+  // Initialize after all other modules
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(initDock, 2000); });
+  } else {
+    setTimeout(initDock, 2000);
+  }
+
+})();
