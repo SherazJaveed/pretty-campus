@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -6,91 +6,147 @@
   <title>Pretty Campus</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { width: 340px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #FAFAF9; color: #1C1917; }
-    .header { background: linear-gradient(135deg, #7C3AED, #6D28D9); padding: 20px; text-align: center; }
-    .header h1 { color: white; font-size: 18px; font-weight: 600; }
-    .header p { color: rgba(255,255,255,0.8); font-size: 12px; margin-top: 4px; }
-    .section { padding: 16px; border-bottom: 1px solid #E7E5E4; }
-    .section-title { font-size: 12px; font-weight: 600; color: #78716C; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .toggle-row label { font-size: 13px; color: #1C1917; }
-    .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+    body { width: 360px; max-height: 540px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1E1B2E; color: #E4E4E7; overflow-y: auto; }
+
+    /* Header */
+    .header { background: linear-gradient(135deg, #7C3AED, #6D28D9); padding: 16px 20px; text-align: center; }
+    .header h1 { color: white; font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
+    .header p { color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 2px; }
+
+    /* Status bar */
+    .status-bar { display: flex; justify-content: space-around; padding: 10px 16px; background: #2D2640; border-bottom: 1px solid #3D3560; }
+    .status-item { text-align: center; }
+    .status-val { font-size: 16px; font-weight: 600; color: #A78BFA; }
+    .status-label { font-size: 9px; color: #6B7280; margin-top: 1px; }
+
+    /* Keyboard shortcuts hint */
+    .shortcuts { display: flex; gap: 8px; padding: 8px 16px; background: #27233D; font-size: 10px; color: #6B7280; justify-content: center; flex-wrap: wrap; }
+    .shortcuts kbd { background: #3D3560; padding: 1px 5px; border-radius: 3px; font-family: monospace; color: #A78BFA; font-size: 10px; }
+
+    /* Feature sections */
+    .section { padding: 10px 16px; border-bottom: 1px solid #27233D; }
+    .section-title { font-size: 10px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+
+    /* Feature row */
+    .feature-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; }
+    .feature-info { display: flex; align-items: center; gap: 8px; }
+    .feature-emoji { font-size: 16px; width: 24px; text-align: center; }
+    .feature-name { font-size: 12px; color: #E4E4E7; }
+    .feature-desc { font-size: 10px; color: #6B7280; }
+
+    /* Toggle switch */
+    .toggle { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #D6D3D1; border-radius: 24px; transition: 0.3s; }
-    .toggle-slider:before { content: ""; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: 0.3s; }
+    .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3D3560; border-radius: 20px; transition: 0.2s; }
+    .toggle-slider:before { content: ""; position: absolute; height: 14px; width: 14px; left: 3px; bottom: 3px; background: #6B7280; border-radius: 50%; transition: 0.2s; }
     .toggle input:checked + .toggle-slider { background-color: #7C3AED; }
-    .toggle input:checked + .toggle-slider:before { transform: translateX(20px); }
-    .theme-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 12px; }
-    .theme-card { padding: 10px 6px; border-radius: 8px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; font-size: 11px; font-weight: 500; }
+    .toggle input:checked + .toggle-slider:before { transform: translateX(16px); background: white; }
+
+    /* Theme grid */
+    .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; }
+    .theme-card { padding: 8px 4px; border-radius: 6px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; font-size: 10px; font-weight: 500; }
     .theme-card:hover { transform: scale(1.03); }
-    .theme-card.active { border-color: #7C3AED; box-shadow: 0 0 0 1px #7C3AED; }
-    .theme-amoled { background: #000; color: #fff; }
-    .theme-midnight { background: #1E1B2E; color: #A78BFA; }
-    .theme-warm { background: #1C1917; color: #FBBF24; }
-    .theme-dot { width: 22px; height: 22px; border-radius: 50%; margin: 0 auto 5px; }
-    .schedule-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; padding: 8px; background: #F5F5F4; border-radius: 8px; }
-    .schedule-row select { flex: 1; padding: 6px; border: 1px solid #D6D3D1; border-radius: 6px; font-size: 12px; background: white; }
-    .schedule-label { font-size: 11px; color: #78716C; margin-bottom: 2px; }
-    .shortcut-hint { font-size: 11px; color: #A8A29E; text-align: center; padding: 8px 16px; background: #F5F5F4; border-bottom: 1px solid #E7E5E4; }
-    .shortcut-hint kbd { background: #E7E5E4; padding: 1px 5px; border-radius: 3px; font-family: monospace; font-size: 11px; }
-    .footer { padding: 12px 16px; text-align: center; font-size: 11px; color: #A8A29E; }
+    .theme-card.active { border-color: #7C3AED; }
+    .t-amoled { background: #000; color: #fff; }
+    .t-midnight { background: #1E1B2E; color: #A78BFA; }
+    .t-warm { background: #1C1917; color: #FBBF24; }
+
+    /* Quick action buttons */
+    .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+    .quick-btn { padding: 8px; background: #2D2640; border: 1px solid #3D3560; border-radius: 8px; color: #D4D4D8; font-size: 11px; cursor: pointer; text-align: center; font-family: inherit; transition: all 0.15s; }
+    .quick-btn:hover { background: rgba(124,58,237,0.15); border-color: #7C3AED; color: #A78BFA; }
+    .quick-btn-emoji { font-size: 16px; display: block; margin-bottom: 2px; }
+
+    /* Footer */
+    .footer { padding: 8px 16px; text-align: center; font-size: 10px; color: #4B5563; border-top: 1px solid #27233D; }
     .footer a { color: #7C3AED; text-decoration: none; }
+
+    /* Scrollbar */
+    body::-webkit-scrollbar { width: 4px; }
+    body::-webkit-scrollbar-thumb { background: #3D3560; border-radius: 2px; }
   </style>
 </head>
 <body>
+
   <div class="header">
     <h1>Pretty Campus</h1>
     <p>Your Canvas, Reimagined</p>
   </div>
-  <div class="shortcut-hint">Toggle dark mode: <kbd>Alt</kbd> + <kbd>D</kbd></div>
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <div class="status-item"><div class="status-val" id="statGPA">--</div><div class="status-label">GPA</div></div>
+    <div class="status-item"><div class="status-val" id="statStreak">0</div><div class="status-label">Streak</div></div>
+    <div class="status-item"><div class="status-val" id="statXP">0</div><div class="status-label">XP</div></div>
+    <div class="status-item"><div class="status-val" id="statBadges">0</div><div class="status-label">Badges</div></div>
+    <div class="status-item"><div class="status-val" id="statFeatures">15</div><div class="status-label">Features</div></div>
+  </div>
+
+  <!-- Keyboard shortcuts -->
+  <div class="shortcuts">
+    <span><kbd>Alt</kbd>+<kbd>D</kbd> Dark</span>
+    <span><kbd>Alt</kbd>+<kbd>T</kbd> Themes</span>
+    <span><kbd>Alt</kbd>+<kbd>F</kbd> Focus</span>
+    <span><kbd>Ctrl</kbd>+<kbd>K</kbd> Commands</span>
+  </div>
+
+  <!-- Dark Mode -->
   <div class="section">
-    <div class="section-title">Dark Mode</div>
-    <div class="toggle-row">
-      <label>Enable Dark Mode</label>
+    <div class="section-title">Appearance</div>
+    <div class="feature-row">
+      <div class="feature-info"><span class="feature-emoji">&#127769;</span><span class="feature-name">Dark Mode</span></div>
       <div class="toggle"><input type="checkbox" id="darkToggle"><span class="toggle-slider"></span></div>
     </div>
-    <div class="toggle-row">
-      <label>Follow System Theme</label>
+    <div class="feature-row">
+      <div class="feature-info"><span class="feature-emoji">&#128187;</span><span class="feature-name">Follow System Theme</span></div>
       <div class="toggle"><input type="checkbox" id="systemToggle"><span class="toggle-slider"></span></div>
     </div>
-    <div class="toggle-row">
-      <label>Schedule Dark Mode</label>
-      <div class="toggle"><input type="checkbox" id="scheduleToggle"><span class="toggle-slider"></span></div>
-    </div>
-    <div class="schedule-row" id="scheduleRow" style="display:none;">
-      <div style="flex:1;">
-        <div class="schedule-label">Start</div>
-        <select id="scheduleStart">
-          <option value="17">5 PM</option>
-          <option value="18" selected>6 PM</option>
-          <option value="19">7 PM</option>
-          <option value="20">8 PM</option>
-          <option value="21">9 PM</option>
-        </select>
-      </div>
-      <div style="flex:1;">
-        <div class="schedule-label">End</div>
-        <select id="scheduleEnd">
-          <option value="6">6 AM</option>
-          <option value="7" selected>7 AM</option>
-          <option value="8">8 AM</option>
-          <option value="9">9 AM</option>
-        </select>
-      </div>
-    </div>
     <div class="theme-grid" id="themeGrid">
-      <div class="theme-card theme-amoled" data-theme="amoled">
-        <div class="theme-dot" style="background:#000;border:2px solid #333;"></div>AMOLED
-      </div>
-      <div class="theme-card theme-midnight active" data-theme="midnight">
-        <div class="theme-dot" style="background:#1E1B2E;border:2px solid #7C3AED;"></div>Midnight
-      </div>
-      <div class="theme-card theme-warm" data-theme="warm">
-        <div class="theme-dot" style="background:#1C1917;border:2px solid #FBBF24;"></div>Warm
-      </div>
+      <div class="theme-card t-amoled active" data-theme="amoled">AMOLED</div>
+      <div class="theme-card t-midnight" data-theme="midnight">Midnight</div>
+      <div class="theme-card t-warm" data-theme="warm">Warm</div>
     </div>
   </div>
-  <div class="footer">Made with care by <a href="https://better-lms.com" target="_blank">Pretty Campus</a></div>
+
+  <!-- Features -->
+  <div class="section">
+    <div class="section-title">Features (all active on Canvas pages)</div>
+    <div class="feature-row"><div class="feature-info"><span class="feature-emoji">&#128200;</span><span class="feature-name">GPA Calculator + Finals Calc</span></div><div class="toggle"><input type="checkbox" id="togGPA" checked disabled><span class="toggle-slider"></span></div></div>
+    <div class="feature-row"><div class="feature-info"><span class="feature-emoji">&#9997;</span><span class="feature-name">Grade Predictions</span></div><div class="toggle"><input type="checkbox" id="togPred" checked disabled><span class="toggle-slider"></span></div></div>
+    <div class="feature-row"><div class="feature-info"><span class="feature-emoji">&#128203;</span><span class="feature-name">Task Sidebar + Progress Rings</span></div><div class="toggle"><input type="checkbox" id="togTasks" checked disabled><span class="toggle-slider"></span></div></div>
+    <div class="feature-row"><div class="feature-info"><span class="feature-emoji">&#127942;</span><span class="feature-name">Achievement Badges + XP</span></div><div class="toggle"><input type="checkbox" id="togBadges" checked disabled><span class="toggle-slider"></span></div></div>
+    <div class="feature-row"><div class="feature-info"><span class="feature-emoji">&#128190;</span><span class="feature-name">Auto-Save for Text</span></div><div class="toggle"><input type="checkbox" id="togAutoSave" checked disabled><span class="toggle-slider"></span></div></div>
+    <div class="feature-row"><div class="feature-info"><span class="feature-emoji">&#128276;</span><span class="feature-name">Smart Notifications</span></div><div class="toggle"><input type="checkbox" id="togNotif" checked disabled><span class="toggle-slider"></span></div></div>
+    <div class="feature-row"><div class="feature-info"><span class="feature-emoji">&#128221;</span><span class="feature-name">Dashboard Notes</span></div><div class="toggle"><input type="checkbox" id="togNotes" checked disabled><span class="toggle-slider"></span></div></div>
+    <div class="feature-row"><div class="feature-info"><span class="feature-emoji">&#128200;</span><span class="feature-name">Study Stats Dashboard</span></div><div class="toggle"><input type="checkbox" id="togStats" checked disabled><span class="toggle-slider"></span></div></div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="section">
+    <div class="section-title">Quick Actions</div>
+    <div class="quick-actions">
+      <button class="quick-btn" id="btnWrapped"><span class="quick-btn-emoji">&#127775;</span>Semester Wrapped</button>
+      <button class="quick-btn" id="btnExport"><span class="quick-btn-emoji">&#128202;</span>Export Grades</button>
+      <button class="quick-btn" id="btnFinals"><span class="quick-btn-emoji">&#127891;</span>Finals Mode</button>
+      <button class="quick-btn" id="btnSounds"><span class="quick-btn-emoji">&#127911;</span>Focus Sounds</button>
+    </div>
+  </div>
+
+  <!-- Theme count -->
+  <div class="section">
+    <div class="section-title">Themes</div>
+    <div class="feature-row">
+      <div class="feature-info"><span class="feature-emoji">&#127912;</span><span class="feature-name">41 themes (30 university + 8 aesthetic + 3 dark)</span></div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-info"><span class="feature-emoji">&#128172;</span><span class="feature-name">Press <kbd style="background:#3D3560;padding:1px 4px;border-radius:3px;font-family:monospace;font-size:10px;color:#A78BFA">Alt+T</kbd> on Canvas to cycle themes</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    v2.5.0 | <a href="https://github.com/SherazJaveed/pretty-campus" target="_blank">GitHub</a> | Made by <a href="https://better-lms.com" target="_blank">Pretty Campus</a>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>

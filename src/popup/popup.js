@@ -1,136 +1,118 @@
 document.addEventListener('DOMContentLoaded', function() {
-  var d = document.getElementById('darkToggle');
-  if (!d) return;
-  var s = document.getElementById('systemToggle');
-  var sc = document.getElementById('scheduleToggle');
-  var sr = document.getElementById('scheduleRow');
-  var ss = document.getElementById('scheduleStart');
-  var se = document.getElementById('scheduleEnd');
-  var tc = document.querySelectorAll('.theme-card');
+  var darkToggle = document.getElementById('darkToggle');
+  var systemToggle = document.getElementById('systemToggle');
+  var themeCards = document.querySelectorAll('.theme-card');
+  if (!darkToggle) return;
 
-  chrome.storage.local.get(['darkMode', 'darkTheme', 'followSystem', 'darkSchedule'], function(data) {
-    d.checked = data.darkMode || false;
-    if (s) s.checked = data.followSystem || false;
-    if (sc && data.darkSchedule && data.darkSchedule.enabled) {
-      sc.checked = true;
-      if (sr) sr.style.display = 'flex';
-      if (ss) ss.value = data.darkSchedule.start || 18;
-      if (se) se.value = data.darkSchedule.end || 7;
-    }
-    var at = data.darkTheme || 'midnight';
-    tc.forEach(function(c) {
-      c.classList.remove('active');
-      if (c.dataset.theme === at) c.classList.add('active');
+  // Load all settings
+  chrome.storage.local.get([
+    'darkMode', 'darkTheme', 'followSystem',
+    'pcStreak', 'pcXP', 'pcBadges'
+  ], function(data) {
+    darkToggle.checked = data.darkMode || false;
+    if (systemToggle) systemToggle.checked = data.followSystem || false;
+
+    var activeTheme = data.darkTheme || 'midnight';
+    themeCards.forEach(function(card) {
+      card.classList.remove('active');
+      if (card.dataset.theme === activeTheme) card.classList.add('active');
     });
+
     if (data.followSystem) {
-      d.disabled = true;
-      d.parentElement.parentElement.style.opacity = '0.5';
+      darkToggle.disabled = true;
+      darkToggle.parentElement.style.opacity = '0.5';
     }
+
+    // Update status bar
+    var streak = document.getElementById('statStreak');
+    var xp = document.getElementById('statXP');
+    var badges = document.getElementById('statBadges');
+    if (streak) streak.textContent = data.pcStreak || 0;
+    if (xp) xp.textContent = data.pcXP || 0;
+    if (badges) badges.textContent = Object.keys(data.pcBadges || {}).length;
   });
 
+  // Send message to active tab
   function send(msg) {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
       if (!tabs[0]) return;
       var id = tabs[0].id;
-      chrome.scripting.insertCSS({target: {tabId: id}, files: ['src/content/dark.css']}, function() {
-        if (chrome.runtime.lastError) { /* ignore */ }
-      });
-      chrome.scripting.executeScript({target: {tabId: id}, files: ['src/content/content.js']}, function() {
-        if (chrome.runtime.lastError) { /* ignore */ }
-        setTimeout(function() {
-          chrome.tabs.sendMessage(id, msg, function() {
-            if (chrome.runtime.lastError) { /* ignore */ }
-          });
-        }, 200);
+      chrome.tabs.sendMessage(id, msg, function() {
+        if (chrome.runtime.lastError) {}
       });
     });
   }
 
-  d.addEventListener('change', function() {
-    var en = d.checked;
-    var ac = document.querySelector('.theme-card.active');
-    var th = ac ? ac.dataset.theme : 'midnight';
-    chrome.storage.local.set({darkMode: en, darkTheme: th, followSystem: false});
-    if (s) s.checked = false;
-    send({action: 'toggleDark', enabled: en, theme: th});
+  // Dark mode toggle
+  darkToggle.addEventListener('change', function() {
+    var enabled = darkToggle.checked;
+    var activeCard = document.querySelector('.theme-card.active');
+    var theme = activeCard ? activeCard.dataset.theme : 'midnight';
+    chrome.storage.local.set({darkMode: enabled, darkTheme: theme, followSystem: false});
+    if (systemToggle) systemToggle.checked = false;
+    send({action: 'toggleDark', enabled: enabled, theme: theme});
   });
 
-  if (s) {
-    s.addEventListener('change', function() {
-      var en = s.checked;
-      chrome.storage.local.set({followSystem: en});
-      if (en) {
-        d.disabled = true;
-        d.parentElement.parentElement.style.opacity = '0.5';
-        if (sc) sc.checked = false;
-        if (sr) sr.style.display = 'none';
-        chrome.storage.local.set({darkSchedule: {enabled: false}});
+  // System theme toggle
+  if (systemToggle) {
+    systemToggle.addEventListener('change', function() {
+      var enabled = systemToggle.checked;
+      chrome.storage.local.set({followSystem: enabled});
+      if (enabled) {
+        darkToggle.disabled = true;
+        darkToggle.parentElement.style.opacity = '0.5';
         send({action: 'followSystem'});
       } else {
-        d.disabled = false;
-        d.parentElement.parentElement.style.opacity = '1';
+        darkToggle.disabled = false;
+        darkToggle.parentElement.style.opacity = '1';
       }
     });
   }
 
-  if (sc) {
-    sc.addEventListener('change', function() {
-      var en = sc.checked;
-      if (sr) sr.style.display = en ? 'flex' : 'none';
-      if (en) {
-        if (s) {
-          s.checked = false;
-          chrome.storage.local.set({followSystem: false});
-        }
-        d.disabled = true;
-        d.parentElement.parentElement.style.opacity = '0.5';
-      } else {
-        d.disabled = false;
-        d.parentElement.parentElement.style.opacity = '1';
-      }
-      var o = {
-        enabled: en,
-        start: ss ? parseInt(ss.value) : 18,
-        end: se ? parseInt(se.value) : 7
-      };
-      chrome.storage.local.set({darkSchedule: o});
-      send({action: 'followSystem'});
-    });
-  }
-
-  if (ss) {
-    ss.addEventListener('change', function() {
-      var o = {
-        enabled: sc ? sc.checked : false,
-        start: parseInt(ss.value),
-        end: se ? parseInt(se.value) : 7
-      };
-      chrome.storage.local.set({darkSchedule: o});
-      send({action: 'followSystem'});
-    });
-  }
-
-  if (se) {
-    se.addEventListener('change', function() {
-      var o = {
-        enabled: sc ? sc.checked : false,
-        start: ss ? parseInt(ss.value) : 18,
-        end: parseInt(se.value)
-      };
-      chrome.storage.local.set({darkSchedule: o});
-      send({action: 'followSystem'});
-    });
-  }
-
-  tc.forEach(function(card) {
+  // Theme cards
+  themeCards.forEach(function(card) {
     card.addEventListener('click', function() {
-      tc.forEach(function(c) { c.classList.remove('active'); });
+      themeCards.forEach(function(c) { c.classList.remove('active'); });
       card.classList.add('active');
-      var th = card.dataset.theme;
-      chrome.storage.local.set({darkTheme: th});
-      if (d.checked || (s && s.checked) || (sc && sc.checked)) {
-        send({action: 'changeTheme', theme: th});
+      var theme = card.dataset.theme;
+      chrome.storage.local.set({darkTheme: theme});
+      if (darkToggle.checked || (systemToggle && systemToggle.checked)) {
+        send({action: 'changeTheme', theme: theme});
       }
     });
   });
+
+  // Quick action buttons
+  var btnWrapped = document.getElementById('btnWrapped');
+  var btnExport = document.getElementById('btnExport');
+  var btnFinals = document.getElementById('btnFinals');
+  var btnSounds = document.getElementById('btnSounds');
+
+  if (btnWrapped) {
+    btnWrapped.addEventListener('click', function() {
+      send({action: 'openWrapped'});
+      window.close();
+    });
+  }
+
+  if (btnExport) {
+    btnExport.addEventListener('click', function() {
+      send({action: 'exportGrades'});
+      window.close();
+    });
+  }
+
+  if (btnFinals) {
+    btnFinals.addEventListener('click', function() {
+      send({action: 'toggleFinals'});
+      window.close();
+    });
+  }
+
+  if (btnSounds) {
+    btnSounds.addEventListener('click', function() {
+      send({action: 'toggleSounds'});
+      window.close();
+    });
+  }
 });
