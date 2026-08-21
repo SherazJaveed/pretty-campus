@@ -3699,3 +3699,289 @@ var PrettyGPA = {
   }
 
 })();
+/* ========================================
+   PRETTY CAMPUS - Focus Sounds
+   Ambient study sounds using Web Audio API
+   No external files needed - generates sounds
+   programmatically. Pairs with Finals Mode.
+   NO Canvas extension has this.
+   ======================================== */
+
+(function() {
+  'use strict';
+
+  var audioCtx = null;
+  var activeNodes = [];
+  var currentSound = null;
+  var volume = 0.3;
+
+  var SOUNDS = [
+    { id: 'off', name: 'Off', emoji: '&#128263;' },
+    { id: 'white-noise', name: 'White Noise', emoji: '&#127787;' },
+    { id: 'brown-noise', name: 'Brown Noise', emoji: '&#9749;' },
+    { id: 'pink-noise', name: 'Pink Noise', emoji: '&#127800;' },
+    { id: 'rain', name: 'Rainfall', emoji: '&#127783;' },
+    { id: 'campfire', name: 'Campfire', emoji: '&#128293;' },
+    { id: 'binaural', name: 'Focus Beats', emoji: '&#127911;' }
+  ];
+
+  function initFocusSounds() {
+    if (document.getElementById('pc-sounds-widget')) return;
+    createSoundsWidget();
+  }
+
+  function createSoundsWidget() {
+    var widget = document.createElement('div');
+    widget.id = 'pc-sounds-widget';
+
+    var btnsHTML = SOUNDS.map(function(s) {
+      return '<button class="pc-sound-btn" data-sound="' + s.id + '" title="' + s.name + '">' +
+        '<span class="pc-sound-emoji">' + s.emoji + '</span>' +
+        '<span class="pc-sound-name">' + s.name + '</span>' +
+      '</button>';
+    }).join('');
+
+    widget.innerHTML =
+      '<div class="pc-sounds-toggle" id="pcSoundsToggle" title="Focus Sounds">&#127911;</div>' +
+      '<div class="pc-sounds-panel" id="pcSoundsPanel" style="display:none;">' +
+        '<div class="pc-sounds-header">Focus Sounds</div>' +
+        '<div class="pc-sounds-grid">' + btnsHTML + '</div>' +
+        '<div class="pc-sounds-volume">' +
+          '<span class="pc-sounds-vol-label">&#128264;</span>' +
+          '<input type="range" id="pcSoundsVolume" class="pc-sounds-slider" min="0" max="100" value="30">' +
+          '<span class="pc-sounds-vol-label">&#128266;</span>' +
+        '</div>' +
+        '<div class="pc-sounds-status" id="pcSoundsStatus">Select a sound to focus</div>' +
+      '</div>';
+
+    document.body.appendChild(widget);
+
+    // Toggle panel
+    document.getElementById('pcSoundsToggle').addEventListener('click', function() {
+      var panel = document.getElementById('pcSoundsPanel');
+      var vis = panel.style.display !== 'none';
+      panel.style.display = vis ? 'none' : 'block';
+    });
+
+    // Sound buttons
+    document.querySelectorAll('.pc-sound-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var soundId = btn.dataset.sound;
+        document.querySelectorAll('.pc-sound-btn').forEach(function(b) { b.classList.remove('pc-sound-active'); });
+
+        if (soundId === 'off' || soundId === currentSound) {
+          stopSound();
+          currentSound = null;
+          document.getElementById('pcSoundsStatus').textContent = 'Sound off';
+          document.getElementById('pcSoundsToggle').classList.remove('pc-sounds-playing');
+        } else {
+          stopSound();
+          playSound(soundId);
+          currentSound = soundId;
+          btn.classList.add('pc-sound-active');
+          var soundName = SOUNDS.find(function(s) { return s.id === soundId; }).name;
+          document.getElementById('pcSoundsStatus').textContent = 'Playing: ' + soundName;
+          document.getElementById('pcSoundsToggle').classList.add('pc-sounds-playing');
+        }
+      });
+    });
+
+    // Volume slider
+    document.getElementById('pcSoundsVolume').addEventListener('input', function(e) {
+      volume = parseInt(e.target.value) / 100;
+      updateVolume();
+    });
+  }
+
+  function getAudioContext() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  function playSound(type) {
+    var ctx = getAudioContext();
+
+    switch(type) {
+      case 'white-noise': createNoise(ctx, 'white'); break;
+      case 'brown-noise': createNoise(ctx, 'brown'); break;
+      case 'pink-noise': createNoise(ctx, 'pink'); break;
+      case 'rain': createRain(ctx); break;
+      case 'campfire': createCampfire(ctx); break;
+      case 'binaural': createBinaural(ctx); break;
+    }
+  }
+
+  function createNoise(ctx, type) {
+    var bufferSize = 2 * ctx.sampleRate;
+    var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    var data = buffer.getChannelData(0);
+
+    var lastOut = 0;
+    for (var i = 0; i < bufferSize; i++) {
+      var white = Math.random() * 2 - 1;
+      if (type === 'white') {
+        data[i] = white;
+      } else if (type === 'brown') {
+        data[i] = (lastOut + (0.02 * white)) / 1.02;
+        lastOut = data[i];
+        data[i] *= 3.5;
+      } else if (type === 'pink') {
+        // Pink noise approximation
+        var b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+        data[i] *= 0.11;
+        b6 = white * 0.115926;
+      }
+    }
+
+    var source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+
+    var gain = ctx.createGain();
+    gain.gain.value = volume;
+
+    source.connect(gain);
+    gain.connect(ctx.destination);
+    source.start();
+
+    activeNodes.push({ source: source, gain: gain });
+  }
+
+  function createRain(ctx) {
+    // Rain = filtered white noise + occasional "droplet" clicks
+    var bufferSize = 2 * ctx.sampleRate;
+    var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    var data = buffer.getChannelData(0);
+
+    for (var i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+      // Occasional loud "drops"
+      if (Math.random() < 0.001) data[i] *= 3;
+    }
+
+    var source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+
+    var filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 800;
+
+    var gain = ctx.createGain();
+    gain.gain.value = volume * 1.2;
+
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    source.start();
+
+    activeNodes.push({ source: source, gain: gain });
+  }
+
+  function createCampfire(ctx) {
+    // Campfire = brown noise + crackle pops
+    var bufferSize = 2 * ctx.sampleRate;
+    var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    var data = buffer.getChannelData(0);
+
+    var lastOut = 0;
+    for (var i = 0; i < bufferSize; i++) {
+      var white = Math.random() * 2 - 1;
+      data[i] = (lastOut + (0.02 * white)) / 1.02;
+      lastOut = data[i];
+      data[i] *= 3.5;
+      // Random crackles
+      if (Math.random() < 0.0003) {
+        data[i] += (Math.random() - 0.5) * 2;
+      }
+    }
+
+    var source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+
+    var filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 400;
+    filter.Q.value = 0.5;
+
+    var gain = ctx.createGain();
+    gain.gain.value = volume;
+
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    source.start();
+
+    activeNodes.push({ source: source, gain: gain });
+  }
+
+  function createBinaural(ctx) {
+    // Binaural beats: 200Hz left, 210Hz right = 10Hz alpha wave difference
+    var oscL = ctx.createOscillator();
+    var oscR = ctx.createOscillator();
+    oscL.frequency.value = 200;
+    oscR.frequency.value = 210;
+    oscL.type = 'sine';
+    oscR.type = 'sine';
+
+    var merger = ctx.createChannelMerger(2);
+    var gainL = ctx.createGain();
+    var gainR = ctx.createGain();
+    gainL.gain.value = volume * 0.3;
+    gainR.gain.value = volume * 0.3;
+
+    oscL.connect(gainL);
+    oscR.connect(gainR);
+    gainL.connect(merger, 0, 0);
+    gainR.connect(merger, 0, 1);
+
+    var masterGain = ctx.createGain();
+    masterGain.gain.value = 1;
+    merger.connect(masterGain);
+    masterGain.connect(ctx.destination);
+
+    oscL.start();
+    oscR.start();
+
+    activeNodes.push(
+      { source: oscL, gain: gainL },
+      { source: oscR, gain: gainR }
+    );
+  }
+
+  function stopSound() {
+    activeNodes.forEach(function(node) {
+      try { node.source.stop(); } catch(e) {}
+      try { node.source.disconnect(); } catch(e) {}
+      try { node.gain.disconnect(); } catch(e) {}
+    });
+    activeNodes = [];
+  }
+
+  function updateVolume() {
+    activeNodes.forEach(function(node) {
+      if (node.gain) node.gain.gain.value = volume;
+    });
+  }
+
+  // Initialize
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(initFocusSounds, 1400); });
+  } else {
+    setTimeout(initFocusSounds, 1400);
+  }
+
+})();
