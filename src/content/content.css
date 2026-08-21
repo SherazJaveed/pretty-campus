@@ -2663,3 +2663,132 @@ body:not([class*="pc-dark-"]) .pc-sounds-panel { background: white; border-color
 body:not([class*="pc-dark-"]) .pc-sounds-header { color: #1F2937; background: rgba(124,58,237,0.05); border-color: #E5E7EB; }
 body:not([class*="pc-dark-"]) .pc-sound-btn { background: #F9FAFB; }
 body:not([class*="pc-dark-"]) .pc-sound-name { color: #6B7280; }
+/* ========================================
+   PRETTY CAMPUS - Responsive CSS
+   Mobile-friendly, tablet-friendly layouts
+   ======================================== */
+
+/* Tablet (768px and below) */
+@media (max-width: 768px) {
+  /* GPA Widget */
+  .pc-gpa-overview { flex-direction: column; gap: 16px; padding: 16px; }
+  .pc-gpa-number { font-size: 40px; }
+  .pc-gpa-stats { gap: 20px; }
+  .pc-gpa-courses-header { display: none; }
+  .pc-gpa-course { grid-template-columns: 4px 1fr auto; gap: 8px; padding: 10px 16px; }
+  .pc-gpa-course-trend { display: none; }
+  .pc-gpa-course-credits { display: none; }
+  .pc-gpa-finals-row { flex-direction: column; }
+  .pc-gpa-finals-input { min-width: 100%; }
+
+  /* Task Sidebar */
+  #pc-task-wrapper { width: 100vw !important; }
+  #pc-task-sidebar { width: 100% !important; }
+  .pc-rings-container { gap: 4px; }
+  .pc-ring-item { width: 50px; }
+  .pc-ring-item svg { width: 48px; height: 48px; }
+  .pc-controls { flex-direction: column; }
+
+  /* Achievements */
+  .pc-badge-grid { grid-template-columns: repeat(3, 1fr); }
+  .pc-ach-stats { gap: 6px; }
+  .pc-ach-stat-val { font-size: 14px; }
+
+  /* Command Palette */
+  #pc-cmd-palette { width: 95vw; max-width: 95vw; }
+  .pc-cmd-input { font-size: 14px; }
+
+  /* Finals Mode */
+  .pc-fm-body { width: 260px; }
+  .pc-fm-timer-svg { width: 130px; height: 130px; }
+  .pc-fm-time { font-size: 26px; }
+  .pc-fm-controls { flex-wrap: wrap; }
+  .pc-fm-modes { flex-wrap: wrap; }
+
+  /* Notifications */
+  .pc-notif-dropdown { width: 300px; right: -10px; }
+
+  /* Dashboard Notes */
+  .pc-notes-actions { gap: 4px; }
+  .pc-notes-btn-export { font-size: 10px; padding: 3px 8px; }
+
+  /* Study Stats */
+  .pc-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .pc-stats-card-val { font-size: 14px; }
+
+  /* Canvas Wrapped */
+  .pc-wrapped-modal { width: 95vw; }
+  .pc-wrapped-slide { padding: 40px 20px; min-height: 380px; }
+  .pc-wrapped-big-number { font-size: 52px; }
+  .pc-wrapped-slide-title { font-size: 22px; }
+  .pc-wrapped-stats-row { gap: 16px; }
+  .pc-wrapped-stat-val { font-size: 24px; }
+
+  /* Focus Sounds */
+  .pc-sounds-panel { width: 220px; }
+}
+
+/* Mobile (480px and below) */
+@media (max-width: 480px) {
+  .pc-gpa-overview { padding: 12px; }
+  .pc-gpa-number { font-size: 32px; }
+  .pc-gpa-stat-value { font-size: 18px; }
+  
+  .pc-badge-grid { grid-template-columns: repeat(2, 1fr); }
+  .pc-badge-emoji { font-size: 20px; }
+  .pc-badge-name { font-size: 9px; }
+  
+  .pc-fm-body { width: 240px; bottom: 120px; }
+  .pc-fm-timer-svg { width: 110px; height: 110px; }
+  
+  .pc-notif-dropdown { width: 280px; }
+  
+  .pc-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 4px; }
+  .pc-stats-card { padding: 8px 4px; }
+  
+  .pc-wrapped-slide { padding: 30px 16px; min-height: 340px; }
+  .pc-wrapped-big-number { font-size: 40px; }
+  .pc-wrapped-slide-title { font-size: 18px; }
+  .pc-wrapped-stats-row { flex-direction: column; gap: 8px; }
+}
+
+/* Make sure fixed elements don't overlap */
+.pc-badge { z-index: 99990; }
+.pc-save-indicator { z-index: 99991; }
+.pc-fm-toggle { z-index: 99992; }
+#pc-sounds-widget { z-index: 99993; }
+#pc-notif-center { z-index: 99994; }
+#pc-cmd-overlay { z-index: 99999; }
+#pc-wrapped-overlay { z-index: 99999; }
+
+/* Prevent layout shifts from injected elements */
+#pc-gpa-widget, #pc-achievements-panel, #pc-notes-widget, 
+#pc-stats-dashboard, .pc-wrapped-trigger {
+  contain: layout style;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  [class*="pc-dark-"] { --pc-text: #FFFFFF; }
+  .pc-gpa-course-name { color: #FFFFFF !important; }
+  .pc-task-name { color: #FFFFFF !important; }
+  .pc-badge-name { color: #FFFFFF !important; }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print styles - hide extension UI when printing */
+@media print {
+  #pc-task-wrapper, #pc-task-sidebar, #pc-notif-center,
+  .pc-badge, .pc-save-indicator, .pc-fm-toggle, .pc-fm-body,
+  #pc-sounds-widget, #pc-cmd-overlay, #pc-wrapped-overlay,
+  #pc-achievements-panel, #pc-stats-dashboard, #pc-notes-widget,
+  .pc-wrapped-trigger { display: none !important; }
+}
