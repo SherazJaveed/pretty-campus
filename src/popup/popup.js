@@ -4,46 +4,65 @@ document.addEventListener('DOMContentLoaded', function() {
   var themeCards = document.querySelectorAll('.theme-card');
   if (!darkToggle) return;
 
-  // Load all settings
-  chrome.storage.local.get([
-    'darkMode', 'darkTheme', 'followSystem',
-    'pcStreak', 'pcXP', 'pcBadges'
-  ], function(data) {
+  var featureToggles = {
+    togGPA: 'pcFeatureGPA',
+    togPred: 'pcFeaturePred',
+    togTasks: 'pcFeatureTasks',
+    togBadges: 'pcFeatureBadges',
+    togAutoSave: 'pcFeatureAutoSave',
+    togNotif: 'pcFeatureNotif',
+    togNotes: 'pcFeatureNotes',
+    togStats: 'pcFeatureStats'
+  };
+
+  var allKeys = ['darkMode', 'darkTheme', 'followSystem', 'pcStreak', 'pcXP', 'pcBadges'];
+  Object.keys(featureToggles).forEach(function(id) { allKeys.push(featureToggles[id]); });
+
+  chrome.storage.local.get(allKeys, function(data) {
+    // Dark mode state
     darkToggle.checked = data.darkMode || false;
     if (systemToggle) systemToggle.checked = data.followSystem || false;
 
+    // Active theme
     var activeTheme = data.darkTheme || 'midnight';
     themeCards.forEach(function(card) {
       card.classList.remove('active');
       if (card.dataset.theme === activeTheme) card.classList.add('active');
     });
 
+    // System theme disables manual toggle
     if (data.followSystem) {
       darkToggle.disabled = true;
-      darkToggle.parentElement.style.opacity = '0.5';
+      darkToggle.closest('label').style.opacity = '0.5';
     }
 
-    // Update status bar
-    var streak = document.getElementById('statStreak');
-    var xp = document.getElementById('statXP');
-    var badges = document.getElementById('statBadges');
-    if (streak) streak.textContent = data.pcStreak || 0;
-    if (xp) xp.textContent = data.pcXP || 0;
-    if (badges) badges.textContent = Object.keys(data.pcBadges || {}).length;
+    // Status bar
+    var el;
+    el = document.getElementById('statStreak'); if (el) el.textContent = data.pcStreak || 0;
+    el = document.getElementById('statXP'); if (el) el.textContent = data.pcXP || 0;
+    el = document.getElementById('statBadges'); if (el) el.textContent = Object.keys(data.pcBadges || {}).length;
+
+    // Feature toggles: default ON, only OFF if explicitly set to false
+    Object.keys(featureToggles).forEach(function(id) {
+      var toggle = document.getElementById(id);
+      if (toggle) {
+        var key = featureToggles[id];
+        toggle.checked = data[key] !== false;
+      }
+    });
   });
 
   // Send message to active tab
   function send(msg) {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
       if (!tabs[0]) return;
-      var id = tabs[0].id;
-      chrome.tabs.sendMessage(id, msg, function() {
+      chrome.tabs.sendMessage(tabs[0].id, msg, function() {
         if (chrome.runtime.lastError) {}
       });
     });
   }
 
-  // Dark mode toggle
+  // Dark mode
   darkToggle.addEventListener('change', function() {
     var enabled = darkToggle.checked;
     var activeCard = document.querySelector('.theme-card.active');
@@ -53,18 +72,18 @@ document.addEventListener('DOMContentLoaded', function() {
     send({action: 'toggleDark', enabled: enabled, theme: theme});
   });
 
-  // System theme toggle
+  // System theme
   if (systemToggle) {
     systemToggle.addEventListener('change', function() {
       var enabled = systemToggle.checked;
       chrome.storage.local.set({followSystem: enabled});
       if (enabled) {
         darkToggle.disabled = true;
-        darkToggle.parentElement.style.opacity = '0.5';
+        darkToggle.closest('label').style.opacity = '0.5';
         send({action: 'followSystem'});
       } else {
         darkToggle.disabled = false;
-        darkToggle.parentElement.style.opacity = '1';
+        darkToggle.closest('label').style.opacity = '1';
       }
     });
   }
@@ -82,37 +101,29 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Quick action buttons
-  var btnWrapped = document.getElementById('btnWrapped');
-  var btnExport = document.getElementById('btnExport');
-  var btnFinals = document.getElementById('btnFinals');
-  var btnSounds = document.getElementById('btnSounds');
+  // Feature toggles
+  Object.keys(featureToggles).forEach(function(id) {
+    var toggle = document.getElementById(id);
+    if (toggle) {
+      toggle.addEventListener('change', function() {
+        var saveData = {};
+        saveData[featureToggles[id]] = toggle.checked;
+        chrome.storage.local.set(saveData);
+        // Tell content script to show/hide feature
+        send({action: 'featureToggle', feature: featureToggles[id], enabled: toggle.checked});
+      });
+    }
+  });
 
-  if (btnWrapped) {
-    btnWrapped.addEventListener('click', function() {
-      send({action: 'openWrapped'});
-      window.close();
-    });
-  }
-
-  if (btnExport) {
-    btnExport.addEventListener('click', function() {
-      send({action: 'exportGrades'});
-      window.close();
-    });
-  }
-
-  if (btnFinals) {
-    btnFinals.addEventListener('click', function() {
-      send({action: 'toggleFinals'});
-      window.close();
-    });
-  }
-
-  if (btnSounds) {
-    btnSounds.addEventListener('click', function() {
-      send({action: 'toggleSounds'});
-      window.close();
-    });
-  }
+  // Quick actions
+  var actions = {btnWrapped:'openWrapped', btnExport:'exportGrades', btnFinals:'toggleFinals', btnSounds:'toggleSounds'};
+  Object.keys(actions).forEach(function(id) {
+    var btn = document.getElementById(id);
+    if (btn) {
+      btn.addEventListener('click', function() {
+        send({action: actions[id]});
+        window.close();
+      });
+    }
+  });
 });
