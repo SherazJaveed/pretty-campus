@@ -3985,3 +3985,266 @@ var PrettyGPA = {
   }
 
 })();
+/* ========================================
+   PRETTY CAMPUS - Dashboard Customizer
+   4 features that BetterCampus has:
+   1. Gradient dashboard cards with custom colors
+   2. Custom font picker
+   3. Condensed card view (more cards visible)
+   4. Sidebar cleanup (remove logo, hide items)
+   ======================================== */
+
+(function() {
+  'use strict';
+
+  var FONTS = [
+    { id: 'default', name: 'Default', family: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' },
+    { id: 'inter', name: 'Inter', family: '"Inter", sans-serif', url: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap' },
+    { id: 'poppins', name: 'Poppins', family: '"Poppins", sans-serif', url: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap' },
+    { id: 'nunito', name: 'Nunito', family: '"Nunito", sans-serif', url: 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap' },
+    { id: 'outfit', name: 'Outfit', family: '"Outfit", sans-serif', url: 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap' },
+    { id: 'space-grotesk', name: 'Space Grotesk', family: '"Space Grotesk", sans-serif', url: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap' },
+    { id: 'dm-sans', name: 'DM Sans', family: '"DM Sans", sans-serif', url: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap' },
+    { id: 'lexend', name: 'Lexend', family: '"Lexend", sans-serif', url: 'https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap' },
+    { id: 'comic-neue', name: 'Comic Neue', family: '"Comic Neue", cursive', url: 'https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap' },
+    { id: 'jetbrains', name: 'JetBrains Mono', family: '"JetBrains Mono", monospace', url: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap' }
+  ];
+
+  var GRADIENTS = [
+    { id: 'none', name: 'Solid Color', gradient: '' },
+    { id: 'violet-pink', name: 'Violet Pink', gradient: 'linear-gradient(135deg, #7C3AED, #EC4899)' },
+    { id: 'ocean', name: 'Ocean', gradient: 'linear-gradient(135deg, #0EA5E9, #3B82F6)' },
+    { id: 'sunset', name: 'Sunset', gradient: 'linear-gradient(135deg, #F97316, #EF4444)' },
+    { id: 'forest', name: 'Forest', gradient: 'linear-gradient(135deg, #10B981, #059669)' },
+    { id: 'gold', name: 'Gold', gradient: 'linear-gradient(135deg, #F59E0B, #D97706)' },
+    { id: 'aurora', name: 'Aurora', gradient: 'linear-gradient(135deg, #7C3AED, #06B6D4)' },
+    { id: 'rose', name: 'Rose', gradient: 'linear-gradient(135deg, #EC4899, #F43F5E)' },
+    { id: 'midnight', name: 'Midnight', gradient: 'linear-gradient(135deg, #1E1B4B, #312E81)' },
+    { id: 'candy', name: 'Candy', gradient: 'linear-gradient(135deg, #F472B6, #A78BFA, #60A5FA)' }
+  ];
+
+  function init() {
+    chrome.storage.local.get(['pcDashFont', 'pcDashGradient', 'pcDashCondensed', 'pcDashSidebar'], function(data) {
+      // Apply saved font
+      if (data.pcDashFont && data.pcDashFont !== 'default') {
+        applyFont(data.pcDashFont);
+      }
+
+      // Apply saved gradient
+      if (data.pcDashGradient && data.pcDashGradient !== 'none') {
+        applyGradient(data.pcDashGradient);
+      }
+
+      // Apply condensed view
+      if (data.pcDashCondensed) {
+        applyCondensed(true);
+      }
+
+      // Apply sidebar cleanup
+      if (data.pcDashSidebar) {
+        applySidebarCleanup(data.pcDashSidebar);
+      }
+
+      // Create customizer panel
+      createCustomizerPanel(data);
+    });
+  }
+
+  function applyFont(fontId) {
+    var font = FONTS.find(function(f) { return f.id === fontId; });
+    if (!font) return;
+
+    // Load Google Font if needed
+    if (font.url) {
+      var existing = document.getElementById('pc-custom-font');
+      if (existing) existing.remove();
+      var link = document.createElement('link');
+      link.id = 'pc-custom-font';
+      link.rel = 'stylesheet';
+      link.href = font.url;
+      document.head.appendChild(link);
+    }
+
+    // Apply to body
+    document.body.style.fontFamily = font.family;
+    // Apply to common Canvas elements
+    var style = document.getElementById('pc-font-override');
+    if (style) style.remove();
+    style = document.createElement('style');
+    style.id = 'pc-font-override';
+    style.textContent = 'body, p, span, div, h1, h2, h3, h4, h5, h6, a, li, td, th, label, input, textarea, select, button { font-family: ' + font.family + ' !important; }';
+    document.head.appendChild(style);
+  }
+
+  function applyGradient(gradientId) {
+    var gradient = GRADIENTS.find(function(g) { return g.id === gradientId; });
+    if (!gradient || !gradient.gradient) return;
+
+    var style = document.getElementById('pc-gradient-override');
+    if (style) style.remove();
+    style = document.createElement('style');
+    style.id = 'pc-gradient-override';
+    style.textContent =
+      '.ic-DashboardCard .ic-DashboardCard__header { background: ' + gradient.gradient + ' !important; }' +
+      '.ic-DashboardCard__header_hero { background: ' + gradient.gradient + ' !important; }' +
+      '.ic-DashboardCard__header_content { background: transparent !important; }';
+    document.head.appendChild(style);
+  }
+
+  function applyCondensed(enabled) {
+    var style = document.getElementById('pc-condensed-override');
+    if (style) style.remove();
+
+    if (enabled) {
+      style = document.createElement('style');
+      style.id = 'pc-condensed-override';
+      style.textContent =
+        '.ic-DashboardCard { min-height: auto !important; }' +
+        '.ic-DashboardCard__header { height: 80px !important; min-height: 80px !important; }' +
+        '.ic-DashboardCard__header_hero { height: 80px !important; }' +
+        '.ic-DashboardCard__header_content { padding: 8px 12px !important; }' +
+        '.ic-DashboardCard__body { padding: 6px 12px !important; }' +
+        '.ic-DashboardCard__action-container { padding: 4px 12px !important; }' +
+        '[class*="DashboardCardLayout"] { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important; gap: 12px !important; }';
+      document.head.appendChild(style);
+    }
+  }
+
+  function applySidebarCleanup(options) {
+    var style = document.getElementById('pc-sidebar-cleanup');
+    if (style) style.remove();
+
+    var css = '';
+    if (options.hideLogo) {
+      css += '.ic-app-header__logomark, .ic-app-header__logomark-container { display: none !important; }';
+    }
+    if (options.hideFeedback) {
+      css += '#right-side .right-side-list .events_list, .recent_feedback { display: none !important; }';
+    }
+    if (options.hideHelp) {
+      css += '.ic-app-header__menu-list-item--help, #global_nav_help_link { display: none !important; }';
+    }
+    if (options.compactNav) {
+      css += '.ic-app-header__menu-list-link { padding: 8px !important; }';
+      css += '.ic-app-header__menu-list-item { margin: 0 !important; }';
+    }
+
+    if (css) {
+      style = document.createElement('style');
+      style.id = 'pc-sidebar-cleanup';
+      style.textContent = css;
+      document.head.appendChild(style);
+    }
+  }
+
+  function createCustomizerPanel(data) {
+    if (document.getElementById('pc-customizer')) return;
+
+    var panel = document.createElement('div');
+    panel.id = 'pc-customizer';
+
+    // Font options HTML
+    var fontHTML = FONTS.map(function(f) {
+      var selected = (data.pcDashFont || 'default') === f.id ? ' pc-cust-selected' : '';
+      return '<div class="pc-cust-option' + selected + '" data-type="font" data-value="' + f.id + '" style="font-family:' + f.family + '">' + f.name + '</div>';
+    }).join('');
+
+    // Gradient options HTML
+    var gradHTML = GRADIENTS.map(function(g) {
+      var selected = (data.pcDashGradient || 'none') === g.id ? ' pc-cust-selected' : '';
+      var bg = g.gradient || '#3D3560';
+      return '<div class="pc-cust-color-option' + selected + '" data-type="gradient" data-value="' + g.id + '" style="background:' + bg + '" title="' + g.name + '"></div>';
+    }).join('');
+
+    panel.innerHTML =
+      '<div class="pc-cust-toggle" id="pcCustToggle" title="Dashboard Customizer">&#127912;</div>' +
+      '<div class="pc-cust-panel" id="pcCustPanel" style="display:none;">' +
+        '<div class="pc-cust-header">Dashboard Customizer</div>' +
+
+        // Fonts
+        '<div class="pc-cust-section">' +
+          '<div class="pc-cust-section-title">Font</div>' +
+          '<div class="pc-cust-font-grid">' + fontHTML + '</div>' +
+        '</div>' +
+
+        // Card Gradients
+        '<div class="pc-cust-section">' +
+          '<div class="pc-cust-section-title">Card Style</div>' +
+          '<div class="pc-cust-color-grid">' + gradHTML + '</div>' +
+        '</div>' +
+
+        // Toggles
+        '<div class="pc-cust-section">' +
+          '<div class="pc-cust-section-title">Layout</div>' +
+          '<label class="pc-cust-toggle-row"><input type="checkbox" id="pcCondensed" ' + (data.pcDashCondensed ? 'checked' : '') + '> Condensed cards</label>' +
+          '<label class="pc-cust-toggle-row"><input type="checkbox" id="pcHideLogo" ' + (data.pcDashSidebar && data.pcDashSidebar.hideLogo ? 'checked' : '') + '> Hide sidebar logo</label>' +
+          '<label class="pc-cust-toggle-row"><input type="checkbox" id="pcHideFeedback" ' + (data.pcDashSidebar && data.pcDashSidebar.hideFeedback ? 'checked' : '') + '> Hide recent feedback</label>' +
+          '<label class="pc-cust-toggle-row"><input type="checkbox" id="pcHideHelp" ' + (data.pcDashSidebar && data.pcDashSidebar.hideHelp ? 'checked' : '') + '> Hide help button</label>' +
+          '<label class="pc-cust-toggle-row"><input type="checkbox" id="pcCompactNav" ' + (data.pcDashSidebar && data.pcDashSidebar.compactNav ? 'checked' : '') + '> Compact navigation</label>' +
+        '</div>' +
+
+      '</div>';
+
+    document.body.appendChild(panel);
+
+    // Toggle panel
+    document.getElementById('pcCustToggle').addEventListener('click', function() {
+      var p = document.getElementById('pcCustPanel');
+      p.style.display = p.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // Font selection
+    document.querySelectorAll('[data-type="font"]').forEach(function(el) {
+      el.addEventListener('click', function() {
+        document.querySelectorAll('[data-type="font"]').forEach(function(e) { e.classList.remove('pc-cust-selected'); });
+        el.classList.add('pc-cust-selected');
+        var fontId = el.dataset.value;
+        applyFont(fontId);
+        chrome.storage.local.set({ pcDashFont: fontId });
+      });
+    });
+
+    // Gradient selection
+    document.querySelectorAll('[data-type="gradient"]').forEach(function(el) {
+      el.addEventListener('click', function() {
+        document.querySelectorAll('[data-type="gradient"]').forEach(function(e) { e.classList.remove('pc-cust-selected'); });
+        el.classList.add('pc-cust-selected');
+        var gradId = el.dataset.value;
+        applyGradient(gradId);
+        chrome.storage.local.set({ pcDashGradient: gradId });
+      });
+    });
+
+    // Condensed toggle
+    document.getElementById('pcCondensed').addEventListener('change', function() {
+      applyCondensed(this.checked);
+      chrome.storage.local.set({ pcDashCondensed: this.checked });
+    });
+
+    // Sidebar toggles
+    var sidebarCheckboxes = ['pcHideLogo', 'pcHideFeedback', 'pcHideHelp', 'pcCompactNav'];
+    sidebarCheckboxes.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('change', function() {
+          var options = {
+            hideLogo: document.getElementById('pcHideLogo').checked,
+            hideFeedback: document.getElementById('pcHideFeedback').checked,
+            hideHelp: document.getElementById('pcHideHelp').checked,
+            compactNav: document.getElementById('pcCompactNav').checked
+          };
+          applySidebarCleanup(options);
+          chrome.storage.local.set({ pcDashSidebar: options });
+        });
+      }
+    });
+  }
+
+  // Initialize
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(init, 400); });
+  } else {
+    setTimeout(init, 400);
+  }
+
+})();
