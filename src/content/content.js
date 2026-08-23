@@ -4252,3 +4252,80 @@ var PrettyGPA = {
     }
   });
 })();
+
+// ============ BUG FIX: Feature toggle handler ============
+(function() {
+  'use strict';
+
+  // Listen for feature toggle messages from popup
+  chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
+    if (req.action === 'featureToggle') {
+      var featureMap = {
+        pcFeatureGPA: 'pc-gpa-widget',
+        pcFeaturePred: 'pc-gpa-widget',
+        pcFeatureTasks: 'pc-task-wrapper',
+        pcFeatureBadges: 'pc-achievements-panel',
+        pcFeatureAutoSave: null,
+        pcFeatureNotif: 'pc-notif-center',
+        pcFeatureNotes: 'pc-notes-widget',
+        pcFeatureStats: 'pc-stats-dashboard'
+      };
+
+      var elementId = featureMap[req.feature];
+      if (elementId) {
+        var el = document.getElementById(elementId);
+        if (el) {
+          if (req.enabled) {
+            el.classList.remove('pc-feature-off');
+          } else {
+            el.classList.add('pc-feature-off');
+            el.classList.remove('pc-expanded');
+          }
+        }
+      }
+
+      // Auto-save special handling
+      if (req.feature === 'pcFeatureAutoSave') {
+        var indicator = document.querySelector('.pc-save-indicator');
+        if (indicator) {
+          if (req.enabled) indicator.classList.remove('pc-feature-off');
+          else indicator.classList.add('pc-feature-off');
+        }
+      }
+
+      sendResponse({success: true});
+    }
+    return true;
+  });
+
+  // On page load, check which features are disabled
+  chrome.storage.local.get([
+    'pcFeatureGPA', 'pcFeaturePred', 'pcFeatureTasks', 'pcFeatureBadges',
+    'pcFeatureAutoSave', 'pcFeatureNotif', 'pcFeatureNotes', 'pcFeatureStats'
+  ], function(data) {
+    var featureMap = {
+      pcFeatureGPA: 'pc-gpa-widget',
+      pcFeatureTasks: 'pc-task-wrapper',
+      pcFeatureBadges: 'pc-achievements-panel',
+      pcFeatureNotif: 'pc-notif-center',
+      pcFeatureNotes: 'pc-notes-widget',
+      pcFeatureStats: 'pc-stats-dashboard'
+    };
+
+    Object.keys(featureMap).forEach(function(key) {
+      if (data[key] === false) {
+        setTimeout(function() {
+          var el = document.getElementById(featureMap[key]);
+          if (el) el.classList.add('pc-feature-off');
+        }, 3000);
+      }
+    });
+
+    if (data.pcFeatureAutoSave === false) {
+      setTimeout(function() {
+        var indicator = document.querySelector('.pc-save-indicator');
+        if (indicator) indicator.classList.add('pc-feature-off');
+      }, 3000);
+    }
+  });
+})();

@@ -3414,3 +3414,112 @@ body:not([class*="pc-dark-"]) .pc-dock-tooltip {
   .pc-gpa-courses-header { display: none !important; }
   .pc-gpa-course { grid-template-columns: 4px 1fr auto !important; padding: 8px 12px !important; }
 }
+
+/* ========================================
+   BUG FIXES
+   ======================================== */
+
+/* BUG 1: Task sidebar dark mode fix */
+[class*="pc-dark-"] #pc-task-sidebar,
+[class*="pc-dark-"] #pc-task-wrapper {
+  background: #1E1B2E !important;
+  color: #E4E4E7 !important;
+  border-color: #3D3560 !important;
+}
+
+[class*="pc-dark-"] .pc-sidebar-inner {
+  background: #1E1B2E !important;
+}
+
+[class*="pc-dark-"] .pc-rings-container {
+  background: #2D2640 !important;
+}
+
+[class*="pc-dark-"] .pc-stats-bar .pc-stat {
+  color: #E4E4E7 !important;
+}
+
+[class*="pc-dark-"] .pc-task-item {
+  color: #E4E4E7 !important;
+}
+
+[class*="pc-dark-"] .pc-task-name {
+  color: #E4E4E7 !important;
+}
+
+[class*="pc-dark-"] .pc-sort-select,
+[class*="pc-dark-"] .pc-filter-select {
+  background: #2D2640 !important;
+  color: #E4E4E7 !important;
+  border-color: #3D3560 !important;
+}
+
+[class*="pc-dark-"] .pc-add-task {
+  color: #A78BFA !important;
+  border-color: #3D3560 !important;
+}
+
+[class*="pc-dark-"] .pc-task-section-title {
+  color: #9CA3AF !important;
+  border-color: #2D2640 !important;
+}
+
+[class*="pc-dark-"] .pc-workload {
+  background: #2D2640 !important;
+}
+
+[class*="pc-dark-"] .pc-sidebar-header {
+  color: #E4E4E7 !important;
+}
+
+/* BUG 2: GPA widget column header fix */
+.pc-gpa-courses-header {
+  display: grid !important;
+  grid-template-columns: 2fr 1fr 0.8fr 0.6fr !important;
+  gap: 8px !important;
+  padding: 10px 24px !important;
+  white-space: nowrap !important;
+}
+
+.pc-gpa-courses-header span {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.pc-gpa-course {
+  display: grid !important;
+  grid-template-columns: 4px 2fr 1fr 0.8fr 0.6fr !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+/* GPA overview stats row fix */
+.pc-gpa-overview {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 16px !important;
+}
+
+.pc-gpa-stats {
+  display: flex !important;
+  gap: 24px !important;
+}
+
+/* GPA container width fix */
+.pc-gpa-container {
+  max-width: 100% !important;
+  width: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* BUG 3: Feature toggle hiding - when user disables a feature via popup */
+#pc-gpa-widget.pc-feature-off { display: none !important; }
+#pc-task-wrapper.pc-feature-off { display: none !important; }
+#pc-achievements-panel.pc-feature-off { display: none !important; }
+.pc-save-indicator.pc-feature-off { display: none !important; }
+#pc-notif-center.pc-feature-off { display: none !important; }
+#pc-notes-widget.pc-feature-off { display: none !important; }
+#pc-stats-dashboard.pc-feature-off { display: none !important; }
