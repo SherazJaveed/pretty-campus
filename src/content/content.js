@@ -4235,3 +4235,20 @@ var PrettyGPA = {
     setTimeout(initDock, 2000);
   }
 })();
+
+
+// Alt+T theme cycling
+(function() {
+  var themeList = ['midnight','amoled','warm','ohio-state','nyu','ucla','stanford','mit','ocean','forest','sunset','rose','lavender'];
+  document.addEventListener('keydown', function(e) {
+    if (e.altKey && e.key === 't') {
+      e.preventDefault();
+      var current = window._pcThemeIdx || 0;
+      if (typeof PrettyThemes !== 'undefined') {
+        PrettyThemes.apply(themeList[current]);
+        console.log('Pretty Campus: Theme -> ' + themeList[current]);
+      }
+      window._pcThemeIdx = (current + 1) % themeList.length;
+    }
+  });
+})();
