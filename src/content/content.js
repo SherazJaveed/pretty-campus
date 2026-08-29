@@ -4522,3 +4522,268 @@ var PrettyGPA = {
     console.log('Pretty Campus: API upgraded (planner items + grading periods + course colors)');
   }
 })();
+
+// ============ GPA CALCULATOR UPGRADE ============
+// Adds: editable credits, weighted GPA, cumulative GPA,
+// editable grade %, custom bounds, save overrides
+// Matching BetterCampus features while keeping our exclusives
+(function() {
+  'use strict';
+
+  // Default grade bounds (user can customize later)
+  var GRADE_BOUNDS = {
+    'A+': { cutoff: 97, gpa: 4.0 },
+    'A':  { cutoff: 93, gpa: 4.0 },
+    'A-': { cutoff: 90, gpa: 3.7 },
+    'B+': { cutoff: 87, gpa: 3.3 },
+    'B':  { cutoff: 83, gpa: 3.0 },
+    'B-': { cutoff: 80, gpa: 2.7 },
+    'C+': { cutoff: 77, gpa: 2.3 },
+    'C':  { cutoff: 73, gpa: 2.0 },
+    'C-': { cutoff: 70, gpa: 1.7 },
+    'D+': { cutoff: 67, gpa: 1.3 },
+    'D':  { cutoff: 63, gpa: 1.0 },
+    'D-': { cutoff: 60, gpa: 0.7 },
+    'F':  { cutoff: 0,  gpa: 0.0 }
+  };
+
+  var WEIGHT_MULTIPLIERS = {
+    'regular': 0,
+    'honors': 0.5,
+    'ap': 1.0
+  };
+
+  function gradeToGPA(percent) {
+    if (percent >= GRADE_BOUNDS['A+'].cutoff) return { letter: 'A+', gpa: GRADE_BOUNDS['A+'].gpa };
+    if (percent >= GRADE_BOUNDS['A'].cutoff) return { letter: 'A', gpa: GRADE_BOUNDS['A'].gpa };
+    if (percent >= GRADE_BOUNDS['A-'].cutoff) return { letter: 'A-', gpa: GRADE_BOUNDS['A-'].gpa };
+    if (percent >= GRADE_BOUNDS['B+'].cutoff) return { letter: 'B+', gpa: GRADE_BOUNDS['B+'].gpa };
+    if (percent >= GRADE_BOUNDS['B'].cutoff) return { letter: 'B', gpa: GRADE_BOUNDS['B'].gpa };
+    if (percent >= GRADE_BOUNDS['B-'].cutoff) return { letter: 'B-', gpa: GRADE_BOUNDS['B-'].gpa };
+    if (percent >= GRADE_BOUNDS['C+'].cutoff) return { letter: 'C+', gpa: GRADE_BOUNDS['C+'].gpa };
+    if (percent >= GRADE_BOUNDS['C'].cutoff) return { letter: 'C', gpa: GRADE_BOUNDS['C'].gpa };
+    if (percent >= GRADE_BOUNDS['C-'].cutoff) return { letter: 'C-', gpa: GRADE_BOUNDS['C-'].gpa };
+    if (percent >= GRADE_BOUNDS['D+'].cutoff) return { letter: 'D+', gpa: GRADE_BOUNDS['D+'].gpa };
+    if (percent >= GRADE_BOUNDS['D'].cutoff) return { letter: 'D', gpa: GRADE_BOUNDS['D'].gpa };
+    if (percent >= GRADE_BOUNDS['D-'].cutoff) return { letter: 'D-', gpa: GRADE_BOUNDS['D-'].gpa };
+    return { letter: 'F', gpa: GRADE_BOUNDS['F'].gpa };
+  }
+
+  function recalcGPA() {
+    var rows = document.querySelectorAll('.pc-gpa-row');
+    var totalQP = 0, totalCredits = 0;
+    var weightedQP = 0;
+
+    rows.forEach(function(row) {
+      var gradeInput = row.querySelector('.pc-gpa-grade-input');
+      var creditInput = row.querySelector('.pc-gpa-credit-input');
+      var weightSelect = row.querySelector('.pc-gpa-weight-select');
+      var letterEl = row.querySelector('.pc-gpa-letter');
+
+      var percent = parseFloat(gradeInput.value);
+      var credits = parseFloat(creditInput.value);
+      var weight = weightSelect ? weightSelect.value : 'regular';
+
+      if (isNaN(percent) || isNaN(credits) || credits <= 0 || weight === 'dnc') {
+        if (letterEl) letterEl.textContent = '--';
+        return;
+      }
+
+      var result = gradeToGPA(percent);
+      if (letterEl) letterEl.textContent = result.letter;
+
+      var multiplier = WEIGHT_MULTIPLIERS[weight] || 0;
+      totalQP += result.gpa * credits;
+      weightedQP += (result.gpa + multiplier) * credits;
+      totalCredits += credits;
+    });
+
+    var unweightedGPA = totalCredits > 0 ? (totalQP / totalCredits).toFixed(2) : '--';
+    var weightedGPA = totalCredits > 0 ? (weightedQP / totalCredits).toFixed(2) : '--';
+
+    // Update displays
+    var uwEl = document.getElementById('pc-gpa-unweighted');
+    var wEl = document.getElementById('pc-gpa-weighted');
+    if (uwEl) uwEl.textContent = unweightedGPA;
+    if (wEl) wEl.textContent = weightedGPA;
+
+    // Cumulative GPA
+    var cumGradeInput = document.getElementById('pc-gpa-cum-grade');
+    var cumCreditInput = document.getElementById('pc-gpa-cum-credits');
+    var cumEl = document.getElementById('pc-gpa-cumulative');
+    if (cumGradeInput && cumCreditInput && cumEl) {
+      var cumGrade = parseFloat(cumGradeInput.value);
+      var cumCredits = parseFloat(cumCreditInput.value);
+      if (!isNaN(cumGrade) && !isNaN(cumCredits) && cumCredits > 0 && totalCredits > 0) {
+        var cumGPA = ((totalQP + (cumGrade * cumCredits)) / (totalCredits + cumCredits)).toFixed(2);
+        cumEl.textContent = cumGPA;
+      } else {
+        cumEl.textContent = unweightedGPA;
+      }
+    }
+
+    // Save overrides
+    saveGPAOverrides();
+
+    // Update the main GPA display number too
+    var mainGPA = document.querySelector('.pc-gpa-number');
+    if (mainGPA) mainGPA.textContent = unweightedGPA;
+  }
+
+  function saveGPAOverrides() {
+    var overrides = {};
+    document.querySelectorAll('.pc-gpa-row').forEach(function(row) {
+      var courseId = row.dataset.courseId;
+      if (!courseId) return;
+      var gradeInput = row.querySelector('.pc-gpa-grade-input');
+      var creditInput = row.querySelector('.pc-gpa-credit-input');
+      var weightSelect = row.querySelector('.pc-gpa-weight-select');
+      var customCheck = row.querySelector('.pc-gpa-custom-check');
+
+      overrides[courseId] = {
+        credits: creditInput ? creditInput.value : '3',
+        weight: weightSelect ? weightSelect.value : 'regular',
+        customGrade: customCheck && customCheck.checked ? gradeInput.value : null
+      };
+    });
+    chrome.storage.local.set({ pcGPAOverrides: overrides });
+  }
+
+  function upgradeGPAWidget() {
+    var widget = document.getElementById('pc-gpa-widget');
+    if (!widget) return;
+
+    chrome.storage.local.get(['pcGPAOverrides', 'pcCumGPA'], function(data) {
+      var overrides = data.pcGPAOverrides || {};
+
+      // Add weighted + cumulative GPA displays to overview
+      var overview = widget.querySelector('.pc-gpa-overview');
+      if (overview && !document.getElementById('pc-gpa-weighted')) {
+        var statsDiv = overview.querySelector('.pc-gpa-stats');
+        if (statsDiv) {
+          var wStat = document.createElement('div');
+          wStat.className = 'pc-gpa-stat';
+          wStat.innerHTML = '<span class="pc-gpa-stat-value" id="pc-gpa-weighted">--</span><span class="pc-gpa-stat-label">Weighted</span>';
+          statsDiv.appendChild(wStat);
+        }
+      }
+
+      // Upgrade each course row with editable fields
+      var courseRows = widget.querySelectorAll('.pc-gpa-course');
+      courseRows.forEach(function(row) {
+        if (row.querySelector('.pc-gpa-credit-input')) return; // Already upgraded
+
+        var courseId = row.dataset.courseId || 'course-' + Math.random();
+        row.classList.add('pc-gpa-row');
+        row.dataset.courseId = courseId;
+
+        var saved = overrides[courseId] || {};
+
+        // Find existing grade text and make it editable
+        var gradeEl = row.querySelector('.pc-gpa-course-grade');
+        if (gradeEl) {
+          var currentGrade = parseFloat(gradeEl.textContent) || 0;
+          var gradeInput = document.createElement('input');
+          gradeInput.type = 'number';
+          gradeInput.className = 'pc-gpa-grade-input';
+          gradeInput.value = saved.customGrade || currentGrade;
+          gradeInput.min = '0';
+          gradeInput.max = '100';
+          gradeInput.step = '0.1';
+          gradeInput.title = 'Edit grade %';
+          gradeInput.addEventListener('input', recalcGPA);
+          gradeEl.innerHTML = '';
+          gradeEl.appendChild(gradeInput);
+          var pctSign = document.createElement('span');
+          pctSign.textContent = '%';
+          pctSign.style.cssText = 'font-size:11px;color:#9CA3AF;margin-left:2px;';
+          gradeEl.appendChild(pctSign);
+        }
+
+        // Replace fixed credits with editable input
+        var creditEl = row.querySelector('.pc-gpa-course-credits');
+        if (creditEl) {
+          var creditInput = document.createElement('input');
+          creditInput.type = 'number';
+          creditInput.className = 'pc-gpa-credit-input';
+          creditInput.value = saved.credits || '3';
+          creditInput.min = '0';
+          creditInput.max = '10';
+          creditInput.step = '1';
+          creditInput.title = 'Edit credits';
+          creditInput.addEventListener('input', recalcGPA);
+          creditEl.innerHTML = '';
+          creditEl.appendChild(creditInput);
+          var crLabel = document.createElement('span');
+          crLabel.textContent = 'cr';
+          crLabel.style.cssText = 'font-size:10px;color:#9CA3AF;margin-left:2px;';
+          creditEl.appendChild(crLabel);
+        }
+
+        // Add letter grade display
+        var trendEl = row.querySelector('.pc-gpa-course-trend');
+        if (trendEl && !trendEl.querySelector('.pc-gpa-letter')) {
+          var letterSpan = document.createElement('span');
+          letterSpan.className = 'pc-gpa-letter';
+          letterSpan.style.cssText = 'font-weight:600;';
+          trendEl.innerHTML = '';
+          trendEl.appendChild(letterSpan);
+        }
+
+        // Add weight selector (AP/Honors/Regular)
+        if (!row.querySelector('.pc-gpa-weight-select')) {
+          var weightContainer = document.createElement('div');
+          weightContainer.style.cssText = 'grid-column: span 1;margin-top:4px;';
+          var weightSelect = document.createElement('select');
+          weightSelect.className = 'pc-gpa-weight-select pc-select';
+          weightSelect.style.cssText = 'font-size:10px;padding:2px 4px;width:auto;';
+          weightSelect.innerHTML = '<option value="regular">Regular</option><option value="honors">Honors</option><option value="ap">AP/IB</option><option value="dnc">Skip</option>';
+          weightSelect.value = saved.weight || 'regular';
+          weightSelect.addEventListener('change', recalcGPA);
+          weightContainer.appendChild(weightSelect);
+          row.appendChild(weightContainer);
+        }
+      });
+
+      // Add cumulative GPA section if not exists
+      if (!document.getElementById('pc-gpa-cum-section')) {
+        var finals = widget.querySelector('.pc-gpa-finals') || widget.querySelector('.pc-gpa-impact');
+        if (finals) {
+          var cumSection = document.createElement('div');
+          cumSection.id = 'pc-gpa-cum-section';
+          cumSection.style.cssText = 'padding:16px 24px;border-top:1px solid #3D3560;';
+          cumSection.innerHTML =
+            '<div style="font-size:14px;font-weight:600;color:#E4E4E7;margin-bottom:10px;">Cumulative GPA</div>' +
+            '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">' +
+              '<div><label style="font-size:11px;color:#9CA3AF;">Prior GPA</label><br><input type="number" id="pc-gpa-cum-grade" class="pc-select" style="width:70px;" value="' + (data.pcCumGPA || '0') + '" min="0" max="4" step="0.01"></div>' +
+              '<div><label style="font-size:11px;color:#9CA3AF;">Prior Credits</label><br><input type="number" id="pc-gpa-cum-credits" class="pc-select" style="width:70px;" value="0" min="0" max="200" step="1"></div>' +
+              '<div><span style="font-size:11px;color:#9CA3AF;">Cumulative</span><br><span id="pc-gpa-cumulative" style="font-size:20px;font-weight:700;color:#A78BFA;">--</span></div>' +
+            '</div>';
+          finals.parentNode.insertBefore(cumSection, finals);
+
+          document.getElementById('pc-gpa-cum-grade').addEventListener('input', recalcGPA);
+          document.getElementById('pc-gpa-cum-credits').addEventListener('input', recalcGPA);
+        }
+      }
+
+      // Initial calculation
+      setTimeout(recalcGPA, 500);
+    });
+  }
+
+  // Run after GPA widget loads
+  var gpaObserver = new MutationObserver(function() {
+    if (document.getElementById('pc-gpa-widget')) {
+      upgradeGPAWidget();
+      gpaObserver.disconnect();
+    }
+  });
+
+  if (document.getElementById('pc-gpa-widget')) {
+    setTimeout(upgradeGPAWidget, 2000);
+  } else {
+    gpaObserver.observe(document.body || document.documentElement, { childList: true, subtree: true });
+    setTimeout(function() { gpaObserver.disconnect(); }, 30000);
+  }
+
+})();

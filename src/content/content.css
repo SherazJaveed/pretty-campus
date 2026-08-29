@@ -4006,3 +4006,61 @@ body:not([class*="pc-dark-"]) .pc-dock-tooltip {
 [class*="pc-dark-"] .ic-DashboardCard { box-shadow: 0 2px 5px rgba(0,0,0,0.3) !important; }
 
 [class*="pc-dark-"] .grades_summary, [class*="pc-dark-"] .grades_summary td, [class*="pc-dark-"] .grades_summary th { background: var(--pc-card) !important; color: var(--pc-text) !important; border-color: rgba(255,255,255,0.1) !important; }
+
+/* GPA Upgrade Styles */
+.pc-gpa-grade-input, .pc-gpa-credit-input {
+  width: 55px !important;
+  padding: 3px 6px !important;
+  border: 1px solid #3D3560 !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  font-family: inherit !important;
+}
+
+[class*="pc-dark-"] .pc-gpa-grade-input,
+[class*="pc-dark-"] .pc-gpa-credit-input {
+  background: #2D2640 !important;
+  color: #E4E4E7 !important;
+  border-color: #3D3560 !important;
+}
+
+body:not([class*="pc-dark-"]) .pc-gpa-grade-input,
+body:not([class*="pc-dark-"]) .pc-gpa-credit-input {
+  background: #F9FAFB !important;
+  color: #1F2937 !important;
+  border-color: #D1D5DB !important;
+}
+
+.pc-gpa-grade-input:focus, .pc-gpa-credit-input:focus {
+  outline: none !important;
+  border-color: #7C3AED !important;
+  box-shadow: 0 0 0 2px rgba(124,58,237,0.15) !important;
+}
+
+.pc-gpa-weight-select {
+  font-size: 10px !important;
+  padding: 2px 4px !important;
+}
+
+[class*="pc-dark-"] .pc-gpa-weight-select {
+  background: #2D2640 !important;
+  color: #D4D4D8 !important;
+  border-color: #3D3560 !important;
+}
+
+[class*="pc-dark-"] #pc-gpa-cum-section {
+  border-color: #3D3560 !important;
+}
+
+[class*="pc-dark-"] #pc-gpa-cum-section label {
+  color: #9CA3AF !important;
+}
+
+/* Hide number input arrows */
+.pc-gpa-grade-input::-webkit-inner-spin-button,
+.pc-gpa-credit-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
