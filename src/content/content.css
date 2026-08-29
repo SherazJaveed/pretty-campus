@@ -3685,3 +3685,324 @@ body:not([class*="pc-dark-"]) .pc-dock-tooltip {
   color: var(--pc-text) !important;
   border-color: rgba(255,255,255,0.1) !important;
 }
+
+
+/* ========================================
+   PRETTY CAMPUS - Complete Dark Mode v2
+   Covers all Canvas LMS pages and elements
+   Written independently using PC variables
+   Grouped by page section for maintainability
+   ======================================== */
+
+/* ---- Primary Backgrounds ---- */
+[class*="pc-dark-"] .eHQDY_dTxv,
+[class*="pc-dark-"] #calendar-app .fc-month-view .fc-today,
+[class*="pc-dark-"] #calendar-drag-and-drop-container .fc-month-view .fc-today,
+[class*="pc-dark-"] #content-wrapper .user_content.not_design_tools table tbody tr:nth-child(even) td,
+[class*="pc-dark-"] #kl_content_block_0 h3:nth-child(1) i,
+[class*="pc-dark-"] #kl_custom_block_0 h3:nth-child(1) i,
+[class*="pc-dark-"] #kl_custom_block_1 h3:nth-child(1) i,
+[class*="pc-dark-"] #kl_custom_block_2 h3:nth-child(1) i,
+[class*="pc-dark-"] .ajas-search-widget__btn--search,
+[class*="pc-dark-"] .alert-info {
+  background-color: var(--pc-bg) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] .discussion-section.alert .discussion-points,
+[class*="pc-dark-"] .discussion-section.alert .discussion-title,
+[class*="pc-dark-"] .extension-linkpreview:hover,
+[class*="pc-dark-"] .ic-Table.ic-Table--hover-row tbody tr.ic-Table__row--bg-alert:hover,
+[class*="pc-dark-"] .ic-Table.ic-Table--hover-row tbody tr.ic-Table__row--bg-danger:hover,
+[class*="pc-dark-"] .ic-Table.ic-Table--hover-row tbody tr.ic-Table__row--bg-neutral:hover,
+[class*="pc-dark-"] .ic-Table.ic-Table--hover-row tbody tr.ic-Table__row--bg-success:hover,
+[class*="pc-dark-"] .ic-Table.ic-Table--hover-row tbody tr:hover,
+[class*="pc-dark-"] .ic-flash-error,
+[class*="pc-dark-"] .ic-flash-info {
+  background-color: var(--pc-bg) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] .ic-flash-success,
+[class*="pc-dark-"] .ic-flash-warning,
+[class*="pc-dark-"] .ig-list .ig-row:hover,
+[class*="pc-dark-"] .context_module_item.context_module_item_hover,
+[class*="pc-dark-"] .tox .tox-mbtn--active,
+[class*="pc-dark-"] .tox .tox-mbtn:hover:not(:disabled):not(.tox-mbtn--active),
+[class*="pc-dark-"] .tox .tox-split-button .tox-tbtn.tox-split-button__chevron:hover,
+[class*="pc-dark-"] .tox .tox-split-button:hover,
+[class*="pc-dark-"] .tox .tox-tbtn.tox-tbtn--enabled:hover,
+[class*="pc-dark-"] .tox .tox-tbtn:hover {
+  background-color: var(--pc-bg) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] .ui-menu .ui-menu-item .ui-progressbar a.ui-widget-header,
+[class*="pc-dark-"] .ui-menu .ui-menu-item a.ui-state-active,
+[class*="pc-dark-"] .ui-menu .ui-menu-item a.ui-state-focus,
+[class*="pc-dark-"] .ui-menu .ui-menu-item a.ui-state-hover,
+[class*="pc-dark-"] .ui-progressbar .ui-menu .ui-menu-item a.ui-widget-header,
+[class*="pc-dark-"] ::-webkit-scrollbar-track,
+[class*="pc-dark-"] div.checkbox:hover,
+[class*="pc-dark-"] .gradebook-cell.grayed-out,
+[class*="pc-dark-"] .baylor-table tr:nth-of-type(2n + 1),
+[class*="pc-dark-"] .Button--active.ui-button {
+  background-color: var(--pc-bg) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] .Button.Button--active,
+[class*="pc-dark-"] .Button.active,
+[class*="pc-dark-"] .active.ui-button,
+[class*="pc-dark-"] .btn.Button--active,
+[class*="pc-dark-"] .btn.active,
+[class*="pc-dark-"] .btn.ui-button.ui-state-active,
+[class*="pc-dark-"] .message-list .message-count,
+[class*="pc-dark-"] .mini_calendar .day.today,
+[class*="pc-dark-"] .ui-button.ui-state-active,
+[class*="pc-dark-"] .ui-button.ui-state-active.ui-state-hover {
+  background-color: var(--pc-bg) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] .ui-button.ui-state-active:hover,
+[class*="pc-dark-"] .ui-progressbar .btn.ui-button.ui-widget-header,
+[class*="pc-dark-"] .ui-progressbar .ui-button.ui-widget-header,
+[class*="pc-dark-"] ::-webkit-scrollbar-thumb,
+[class*="pc-dark-"] .ic-unread-badge__total-count,
+[class*="pc-dark-"] .ic-app-header {
+  background-color: var(--pc-bg) !important;
+  color: var(--pc-text) !important;
+}
+
+/* ---- Secondary Backgrounds (cards, inputs, hover) ---- */
+[class*="pc-dark-"] .ic-DashboardCard__placeholder-svg .ic-DashboardCard__placeholder-animates>*,
+[class*="pc-dark-"] #calendar-app .fc-month-view .fc-today,
+[class*="pc-dark-"] #calendar-drag-and-drop-container .fc-month-view .fc-today,
+[class*="pc-dark-"] #content-wrapper .user_content.not_design_tools table tbody tr:nth-child(even) td,
+[class*="pc-dark-"] #kl_content_block_0 h3:nth-child(1) i,
+[class*="pc-dark-"] #kl_custom_block_0 h3:nth-child(1) i,
+[class*="pc-dark-"] #kl_custom_block_1 h3:nth-child(1) i,
+[class*="pc-dark-"] #kl_custom_block_2 h3:nth-child(1) i,
+[class*="pc-dark-"] .ajas-search-widget__btn--search,
+[class*="pc-dark-"] .alert-info {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] .discussion-section.alert .discussion-points,
+[class*="pc-dark-"] .discussion-section.alert .discussion-title,
+[class*="pc-dark-"] .extension-linkpreview:hover,
+[class*="pc-dark-"] .ic-Table.ic-Table--hover-row tbody tr.ic-Table__row--bg-alert:hover,
+[class*="pc-dark-"] .ic-Table.ic-Table--hover-row tbody tr.ic-Table__row--bg-danger:hover,
+[class*="pc-dark-"] .ic-Table.ic-Table--hover-row tbody tr.ic-Table__row--bg-neutral:hover,
+[class*="pc-dark-"] .ic-Table.ic-Table--hover-row tbody tr.ic-Table__row--bg-success:hover,
+[class*="pc-dark-"] .ic-Table.ic-Table--hover-row tbody tr:hover,
+[class*="pc-dark-"] .ic-flash-error,
+[class*="pc-dark-"] .ic-flash-info {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] .ic-flash-success,
+[class*="pc-dark-"] .ic-flash-warning,
+[class*="pc-dark-"] .ig-list .ig-row:hover,
+[class*="pc-dark-"] .context_module_item.context_module_item_hover,
+[class*="pc-dark-"] .tox .tox-mbtn--active,
+[class*="pc-dark-"] .tox .tox-mbtn:hover:not(:disabled):not(.tox-mbtn--active),
+[class*="pc-dark-"] .tox .tox-split-button .tox-tbtn.tox-split-button__chevron:hover,
+[class*="pc-dark-"] .tox .tox-split-button:hover,
+[class*="pc-dark-"] .tox .tox-tbtn.tox-tbtn--enabled:hover,
+[class*="pc-dark-"] .tox .tox-tbtn:hover {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] .ui-menu .ui-menu-item .ui-progressbar a.ui-widget-header,
+[class*="pc-dark-"] .ui-menu .ui-menu-item a.ui-state-active,
+[class*="pc-dark-"] .ui-menu .ui-menu-item a.ui-state-focus,
+[class*="pc-dark-"] .ui-menu .ui-menu-item a.ui-state-hover,
+[class*="pc-dark-"] .ui-progressbar .ui-menu .ui-menu-item a.ui-widget-header,
+[class*="pc-dark-"] ::-webkit-scrollbar-track,
+[class*="pc-dark-"] div.checkbox:hover,
+[class*="pc-dark-"] .gradebook-cell.grayed-out,
+[class*="pc-dark-"] .baylor-table tr:nth-of-type(2n + 1),
+[class*="pc-dark-"] #kl_content_block_0 h3:nth-child(1) {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] #kl_custom_block_0 h3:nth-child(1),
+[class*="pc-dark-"] #kl_custom_block_1 h3:nth-child(1),
+[class*="pc-dark-"] #kl_custom_block_2 h3:nth-child(1),
+[class*="pc-dark-"] #kl_wrapper_3.kl_colored_headings #kl_modules h3,
+[class*="pc-dark-"] #kl_wrapper_3.kl_colored_headings #kl_modules h3:not(.ui-state-default) i,
+[class*="pc-dark-"] #kl_wrapper_3.kl_colored_headings>div>h3:not(.ui-state-default),
+[class*="pc-dark-"] #kl_wrapper_3.kl_colored_headings>div>h3:not(.ui-state-default) i,
+[class*="pc-dark-"] #kl_wrapper_3.kl_colored_headings_box_left #kl_modules h3,
+[class*="pc-dark-"] #kl_wrapper_3.kl_colored_headings_box_left #kl_modules h3 i,
+[class*="pc-dark-"] #kl_wrapper_3.kl_colored_headings_box_left>div>h3 i {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] #kl_wrapper_3.kl_colored_headings_box_left>div>h3:not(.ui-state-default),
+[class*="pc-dark-"] #kl_wrapper_3.kl_emta h3:not(.ui-state-default),
+[class*="pc-dark-"] .ic-app-header__menu-list-link:focus,
+[class*="pc-dark-"] .kl_flex_column h4,
+[class*="pc-dark-"] .tox .tox-collection--list .tox-collection__item--enabled,
+[class*="pc-dark-"] ul.outcome-level li:focus,
+[class*="pc-dark-"] ul.outcome-level li:hover {
+  background-color: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+
+/* ---- Text Colors ---- */
+[class*="pc-dark-"] #last_saved_indicator,
+[class*="pc-dark-"] #minical .fc-other-month,
+[class*="pc-dark-"] #nav_disabled_list li.navitem,
+[class*="pc-dark-"] .ToDoSidebarItem__Info>span,
+[class*="pc-dark-"] .extension-aldue,
+[class*="pc-dark-"] .ic-item-row__meta-content-timestamp p,
+[class*="pc-dark-"] .ig-list .icon-drag-handle,
+[class*="pc-dark-"] .ig-list .ig-row .ig-empty-msg,
+[class*="pc-dark-"] .message-detail.conversations__message-detail .date,
+[class*="pc-dark-"] .message-detail.conversations__message-detail .user-info .context,
+[class*="pc-dark-"] .message-detail.span8 .date,
+[class*="pc-dark-"] .message-detail.span8 .user-info .context {
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] .message-list .summary,
+[class*="pc-dark-"] .profile_table .data_description,
+[class*="pc-dark-"] .question .header .question_points_holder,
+[class*="pc-dark-"] .student_assignment .context,
+[class*="pc-dark-"] .tox .tox-collection__item-accessory,
+[class*="pc-dark-"] .yyQPt_blJt,
+[class*="pc-dark-"] ul#question_list.read_only li.seen,
+[class*="pc-dark-"] ul#question_list li.current_question,
+[class*="pc-dark-"] .css-1sr6v3o-text,
+[class*="pc-dark-"] #content-wrapper .user_content.not_design_tools a,
+[class*="pc-dark-"] #media_comment_maybe,
+[class*="pc-dark-"] #nav-tray-portal a {
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] .ToDoSidebarItem__Title a,
+[class*="pc-dark-"] .message-list .date,
+[class*="pc-dark-"] a:focus,
+[class*="pc-dark-"] a:hover,
+[class*="pc-dark-"] .fQfxa_bCUx.fQfxa_eCSh,
+[class*="pc-dark-"] .fake-link,
+[class*="pc-dark-"] .no-touch .ic-DashboardCard__action:hover,
+[class*="pc-dark-"] .enRcg_bGBk.enRcg_fpfC,
+[class*="pc-dark-"] input.enRcg_bGBk[type].enRcg_fpfC,
+[class*="pc-dark-"] select.ic-Input:focus,
+[class*="pc-dark-"] textarea.ic-Input:focus,
+[class*="pc-dark-"] input[type=text].ic-Input:focus {
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] input[type=password].ic-Input:focus,
+[class*="pc-dark-"] input[type=datetime].ic-Input:focus,
+[class*="pc-dark-"] input[type=datetime-local].ic-Input:focus,
+[class*="pc-dark-"] input[type=date].ic-Input:focus,
+[class*="pc-dark-"] input[type=month].ic-Input:focus,
+[class*="pc-dark-"] input[type=time].ic-Input:focus,
+[class*="pc-dark-"] input[type=week].ic-Input:focus,
+[class*="pc-dark-"] input[type=number].ic-Input:focus,
+[class*="pc-dark-"] input[type=email].ic-Input:focus,
+[class*="pc-dark-"] input[type=url].ic-Input:focus,
+[class*="pc-dark-"] input[type=search].ic-Input:focus,
+[class*="pc-dark-"] input[type=tel].ic-Input:focus {
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] input[type=color].ic-Input:focus,
+[class*="pc-dark-"] .uneditable-input.ic-Input:focus,
+[class*="pc-dark-"] .published-status.published .icon-publish::before,
+[class*="pc-dark-"] .menu-item-icon-container,
+[class*="pc-dark-"] .ic-app-header__menu-list-link .menu-item__text,
+[class*="pc-dark-"] .ic-app-header__menu-list-item.ic-app-header__menu-list-item--active .menu-item__text {
+  color: var(--pc-text) !important;
+}
+
+/* ---- Borders ---- */
+[class*="pc-dark-"] #minical .fc-widget-content,
+[class*="pc-dark-"] #kl_wrapper_3.kl_colored_headings #kl_banner .kl_subtitle,
+[class*="pc-dark-"] #content-wrapper .user_content.not_design_tools table td,
+[class*="pc-dark-"] #content-wrapper .user_content.not_design_tools table th,
+[class*="pc-dark-"] table.seas-homepage-table,
+[class*="pc-dark-"] .avatar,
+[class*="pc-dark-"] .css-7naoe-textInput__facade,
+[class*="pc-dark-"] .css-1dn3ise-textInput__facade,
+[class*="pc-dark-"] .ac-result-wrapper:before,
+[class*="pc-dark-"] .eIQkd_bGBk {
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+[class*="pc-dark-"] .ui-tabs .ui-tabs-nav,
+[class*="pc-dark-"] .eHzxc_bGBk,
+[class*="pc-dark-"] .quiz_comment:after,
+[class*="pc-dark-"] .quiz_comment:before,
+[class*="pc-dark-"] .ic-avatar,
+[class*="pc-dark-"] #minical .event::after,
+[class*="pc-dark-"] .ic-notification,
+[class*="pc-dark-"] #right-side .shared-space h2 {
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* ---- Links ---- */
+[class*="pc-dark-"] #content-wrapper .user_content.not_design_tools a,
+[class*="pc-dark-"] #media_comment_maybe,
+[class*="pc-dark-"] #nav-tray-portal a,
+[class*="pc-dark-"] .ToDoSidebarItem__Title a,
+[class*="pc-dark-"] .message-list .date,
+[class*="pc-dark-"] a:focus,
+[class*="pc-dark-"] a:hover,
+[class*="pc-dark-"] .fQfxa_bCUx.fQfxa_eCSh,
+[class*="pc-dark-"] .fake-link,
+[class*="pc-dark-"] .no-touch .ic-DashboardCard__action:hover,
+[class*="pc-dark-"] .enRcg_bGBk.enRcg_fpfC,
+[class*="pc-dark-"] input.enRcg_bGBk[type].enRcg_fpfC,
+[class*="pc-dark-"] select.ic-Input:focus,
+[class*="pc-dark-"] textarea.ic-Input:focus,
+[class*="pc-dark-"] input[type=text].ic-Input:focus,
+[class*="pc-dark-"] input[type=password].ic-Input:focus,
+[class*="pc-dark-"] input[type=datetime].ic-Input:focus,
+[class*="pc-dark-"] input[type=datetime-local].ic-Input:focus,
+[class*="pc-dark-"] input[type=date].ic-Input:focus,
+[class*="pc-dark-"] input[type=month].ic-Input:focus,
+[class*="pc-dark-"] input[type=time].ic-Input:focus,
+[class*="pc-dark-"] input[type=week].ic-Input:focus,
+[class*="pc-dark-"] input[type=number].ic-Input:focus,
+[class*="pc-dark-"] input[type=email].ic-Input:focus,
+[class*="pc-dark-"] input[type=url].ic-Input:focus,
+[class*="pc-dark-"] input[type=search].ic-Input:focus,
+[class*="pc-dark-"] input[type=tel].ic-Input:focus,
+[class*="pc-dark-"] input[type=color].ic-Input:focus,
+[class*="pc-dark-"] .uneditable-input.ic-Input:focus {
+  color: #A78BFA !important;
+}
+
+/* ---- Scrollbar & Misc ---- */
+[class*="pc-dark-"] ::-webkit-scrollbar { width: 10px; }
+[class*="pc-dark-"] ::-webkit-scrollbar-track { background: var(--pc-bg) !important; }
+[class*="pc-dark-"] ::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.3) !important; border-radius: 5px; }
+[class*="pc-dark-"] ::-webkit-scrollbar-thumb:hover { background: var(--pc-accent) !important; }
+
+/* ---- Canvas Sidebar ---- */
+[class*="pc-dark-"] .ic-app-header { background: var(--pc-card) !important; }
+[class*="pc-dark-"] .ic-app-header__menu-list-link svg { fill: #D4D4D8 !important; }
+[class*="pc-dark-"] .menu-item-icon-container,
+[class*="pc-dark-"] .ic-app-header__menu-list-link .menu-item__text { color: #D4D4D8 !important; }
+[class*="pc-dark-"] .ic-app-header__menu-list-item.ic-app-header__menu-list-item--active .ic-app-header__menu-list-link { background: rgba(0,0,0,0.3) !important; }
+[class*="pc-dark-"] .ic-app-header__logomark-container { background: none !important; }
+[class*="pc-dark-"] .ic-DashboardCard__header-button,
+[class*="pc-dark-"] .ic-app-header__secondary-navigation { background: none !important; border: none !important; }
+
+/* ---- Shadows ---- */
+[class*="pc-dark-"] .ic-DashboardCard:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important; }
+[class*="pc-dark-"] .ic-DashboardCard { box-shadow: 0 2px 5px rgba(0,0,0,0.3) !important; }
+
+[class*="pc-dark-"] .grades_summary, [class*="pc-dark-"] .grades_summary td, [class*="pc-dark-"] .grades_summary th { background: var(--pc-card) !important; color: var(--pc-text) !important; border-color: rgba(255,255,255,0.1) !important; }
