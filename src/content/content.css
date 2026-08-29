@@ -3523,3 +3523,165 @@ body:not([class*="pc-dark-"]) .pc-dock-tooltip {
 #pc-notif-center.pc-feature-off { display: none !important; }
 #pc-notes-widget.pc-feature-off { display: none !important; }
 #pc-stats-dashboard.pc-feature-off { display: none !important; }
+
+/* ========================================
+   DARK MODE FIX - 20 Missing Canvas Selectors
+   Matching BetterCampus dark mode coverage
+   ======================================== */
+
+/* Planner/Dashboard items */
+[class*="pc-dark-"] .PlannerItem-styles__root,
+[class*="pc-dark-"] .PlannerItem-styles__due,
+[class*="pc-dark-"] .PlannerItem-styles__score,
+[class*="pc-dark-"] .PlannerItem-styles__type > span {
+  background: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] .PlannerHeader-styles__root {
+  background: var(--pc-bg) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] .Grouping-styles__title,
+[class*="pc-dark-"] .Grouping-styles__title::after {
+  background: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] .EmptyDays-styles__root,
+[class*="pc-dark-"] .Day-styles__root,
+[class*="pc-dark-"] .Day-styles__root h2 {
+  background: var(--pc-bg) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] .CompletedItemsFacade-styles__root {
+  background: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* Tables */
+[class*="pc-dark-"] .ic-Table,
+[class*="pc-dark-"] .ic-Table td,
+[class*="pc-dark-"] .ic-Table th {
+  background: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+[class*="pc-dark-"] .ic-Table.ic-Table--striped tbody tr:nth-child(odd) {
+  background: rgba(124,58,237,0.05) !important;
+}
+
+[class*="pc-dark-"] .ic-Action-header {
+  background: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* Files page */
+[class*="pc-dark-"] .ef-directory-header {
+  background: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* Rubrics */
+[class*="pc-dark-"] .rubric_container,
+[class*="pc-dark-"] .rubric_container td,
+[class*="pc-dark-"] .rubric_container th,
+[class*="pc-dark-"] .rubric_container .rubric_title {
+  background: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* Submissions */
+[class*="pc-dark-"] .submission-details-container,
+[class*="pc-dark-"] .submission-details-header__heading-and-grades {
+  background: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* Messages/Inbox */
+[class*="pc-dark-"] .message-list,
+[class*="pc-dark-"] .message-list .messages > li,
+[class*="pc-dark-"] .message-list .author,
+[class*="pc-dark-"] .message-list .subject,
+[class*="pc-dark-"] .message-list .summary,
+[class*="pc-dark-"] .message-list .date {
+  background: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* Rich text editor - menubar + header */
+[class*="pc-dark-"] .tox .tox-menubar,
+[class*="pc-dark-"] .tox .tox-mbtn,
+[class*="pc-dark-"] .tox:not(.tox-tinymce-inline) .tox-editor-header {
+  background: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+[class*="pc-dark-"] .tox .tox-mbtn:hover,
+[class*="pc-dark-"] .tox .tox-tbtn:hover {
+  background: rgba(124,58,237,0.2) !important;
+}
+
+/* Date picker */
+[class*="pc-dark-"] .ui-datepicker,
+[class*="pc-dark-"] .ui-datepicker .ui-widget-header,
+[class*="pc-dark-"] .ui-datepicker .ui-datepicker-time,
+[class*="pc-dark-"] .ui-datepicker td a,
+[class*="pc-dark-"] .ui-datepicker td span {
+  background: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+[class*="pc-dark-"] .ui-datepicker .ui-state-highlight {
+  background: rgba(124,58,237,0.2) !important;
+}
+
+/* Tabs */
+[class*="pc-dark-"] .ui-tabs,
+[class*="pc-dark-"] .ui-tabs .ui-tabs-nav,
+[class*="pc-dark-"] .ui-tabs .ui-tabs-nav li a,
+[class*="pc-dark-"] .ui-tabs .ui-tabs-panel {
+  background: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+[class*="pc-dark-"] .ui-tabs .ui-tabs-nav li.ui-tabs-active a {
+  background: var(--pc-accent) !important;
+  color: white !important;
+}
+
+/* Course left sidebar */
+[class*="pc-dark-"] .ic-app-course-menu,
+[class*="pc-dark-"] #left-side,
+[class*="pc-dark-"] .ic-app-course-menu li a {
+  background: var(--pc-card) !important;
+  color: var(--pc-text) !important;
+}
+
+[class*="pc-dark-"] .ic-app-course-menu li a:hover {
+  background: rgba(124,58,237,0.15) !important;
+}
+
+/* Calendar week/month views */
+[class*="pc-dark-"] .fc-month-view .fc-widget-header,
+[class*="pc-dark-"] .fc-month-view .fc-day,
+[class*="pc-dark-"] .fc-month-view .fc-other-month,
+[class*="pc-dark-"] .fc-agendaWeek-view .fc-widget-header,
+[class*="pc-dark-"] .fc-agendaWeek-view .fc-axis,
+[class*="pc-dark-"] .fc-agendaWeek-view .fc-body {
+  background: var(--pc-bg) !important;
+  color: var(--pc-text) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
