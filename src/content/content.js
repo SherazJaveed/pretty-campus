@@ -4787,3 +4787,223 @@ var PrettyGPA = {
   }
 
 })();
+
+// ============ TASK SIDEBAR UPGRADE ============
+// Adds: course colors, type icons, hide completed, hover preview,
+// custom labels, view more, 24hr time, course color coding
+(function() {
+  'use strict';
+
+  // Assignment type SVG icons (compact, our own designs)
+  var TYPE_ICONS = {
+    assignment: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+    quiz: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    discussion_topic: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
+    announcement: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>',
+    wiki_page: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>',
+    'default': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>'
+  };
+
+  function upgradeTaskSidebar() {
+    var sidebar = document.getElementById('pc-task-sidebar');
+    if (!sidebar || sidebar.dataset.upgraded === 'true') return;
+    sidebar.dataset.upgraded = 'true';
+
+    chrome.storage.local.get(['pcHideCompleted', 'pcTaskLabels', 'pcShow24hr'], function(data) {
+
+      // 1. Add control bar (hide completed + 24hr toggle)
+      var controls = sidebar.querySelector('.pc-controls');
+      if (controls && !document.getElementById('pcHideCompletedBtn')) {
+        var hideBtn = document.createElement('button');
+        hideBtn.id = 'pcHideCompletedBtn';
+        hideBtn.className = 'pc-task-ctrl-btn';
+        hideBtn.textContent = data.pcHideCompleted ? 'Show Done' : 'Hide Done';
+        hideBtn.style.cssText = 'padding:4px 10px;background:rgba(124,58,237,0.15);border:1px solid #3D3560;border-radius:6px;color:#A78BFA;font-size:10px;cursor:pointer;font-family:inherit;';
+        hideBtn.addEventListener('click', function() {
+          var hiding = hideBtn.textContent === 'Hide Done';
+          hideBtn.textContent = hiding ? 'Show Done' : 'Hide Done';
+          chrome.storage.local.set({ pcHideCompleted: hiding });
+          toggleCompletedTasks(hiding);
+        });
+        controls.appendChild(hideBtn);
+
+        // Apply saved state
+        if (data.pcHideCompleted) toggleCompletedTasks(true);
+      }
+
+      // 2. Upgrade each task item
+      upgradeTaskItems(data);
+
+      // 3. Watch for new tasks being added
+      var observer = new MutationObserver(function() {
+        upgradeTaskItems(data);
+      });
+      var taskList = sidebar.querySelector('.pc-task-list');
+      if (taskList) {
+        observer.observe(taskList, { childList: true, subtree: true });
+      }
+    });
+  }
+
+  function upgradeTaskItems(data) {
+    var tasks = document.querySelectorAll('.pc-task-item');
+    tasks.forEach(function(task) {
+      if (task.dataset.enhanced === 'true') return;
+      task.dataset.enhanced = 'true';
+
+      // A. Add type icon
+      var type = task.dataset.type || 'assignment';
+      var iconHtml = TYPE_ICONS[type] || TYPE_ICONS['default'];
+      var existingIcon = task.querySelector('.pc-task-type-icon');
+      if (!existingIcon) {
+        var iconSpan = document.createElement('span');
+        iconSpan.className = 'pc-task-type-icon';
+        iconSpan.innerHTML = iconHtml;
+        iconSpan.title = type.replace('_', ' ');
+        iconSpan.style.cssText = 'margin-right:6px;opacity:0.6;display:inline-flex;vertical-align:middle;';
+        var nameEl = task.querySelector('.pc-task-name');
+        if (nameEl) nameEl.insertBefore(iconSpan, nameEl.firstChild);
+      }
+
+      // B. Color-code by course
+      var courseColor = task.dataset.courseColor;
+      if (courseColor && courseColor !== '#7C3AED') {
+        task.style.borderLeft = '3px solid ' + courseColor;
+      }
+
+      // C. Add hover preview
+      if (!task.querySelector('.pc-task-preview')) {
+        var previewDiv = document.createElement('div');
+        previewDiv.className = 'pc-task-preview';
+        previewDiv.style.cssText = 'display:none;position:absolute;left:0;right:0;top:100%;background:#1E1B2E;border:1px solid #3D3560;border-radius:8px;padding:10px;z-index:10;font-size:11px;color:#D4D4D8;box-shadow:0 4px 12px rgba(0,0,0,0.3);max-height:120px;overflow:hidden;';
+
+        var points = task.dataset.points;
+        var dueDate = task.dataset.due;
+        var courseName = task.dataset.course || '';
+        previewDiv.innerHTML =
+          '<div style="font-weight:600;margin-bottom:4px;">' + (task.querySelector('.pc-task-name') ? task.querySelector('.pc-task-name').textContent : '') + '</div>' +
+          '<div style="color:#9CA3AF;">' + courseName + '</div>' +
+          (points ? '<div style="color:#A78BFA;">' + points + ' points</div>' : '') +
+          (dueDate ? '<div style="color:#F59E0B;">Due: ' + formatDate(dueDate, data.pcShow24hr) + '</div>' : '');
+
+        task.style.position = 'relative';
+        task.appendChild(previewDiv);
+
+        task.addEventListener('mouseenter', function() { previewDiv.style.display = 'block'; });
+        task.addEventListener('mouseleave', function() { previewDiv.style.display = 'none'; });
+      }
+
+      // D. Add custom label support
+      if (!task.querySelector('.pc-task-label-btn')) {
+        var labelBtn = document.createElement('button');
+        labelBtn.className = 'pc-task-label-btn';
+        labelBtn.innerHTML = '&#127991;';
+        labelBtn.title = 'Add label';
+        labelBtn.style.cssText = 'background:none;border:none;font-size:12px;cursor:pointer;opacity:0.4;padding:2px;';
+        labelBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var label = prompt('Enter label for this task:');
+          if (label !== null) {
+            var taskId = task.dataset.id;
+            if (label.trim()) {
+              addLabel(task, label.trim());
+              saveLabel(taskId, label.trim());
+            } else {
+              removeLabel(task);
+              saveLabel(taskId, '');
+            }
+          }
+        });
+
+        var actionsArea = task.querySelector('.pc-task-actions') || task;
+        actionsArea.appendChild(labelBtn);
+      }
+
+      // Load saved label
+      var savedLabels = data.pcTaskLabels || {};
+      var taskId = task.dataset.id;
+      if (taskId && savedLabels[taskId]) {
+        addLabel(task, savedLabels[taskId]);
+      }
+    });
+  }
+
+  function addLabel(task, text) {
+    removeLabel(task);
+    var label = document.createElement('span');
+    label.className = 'pc-task-label';
+    label.textContent = text;
+    label.style.cssText = 'background:rgba(124,58,237,0.2);color:#A78BFA;padding:1px 6px;border-radius:4px;font-size:9px;margin-left:6px;';
+    var nameEl = task.querySelector('.pc-task-name');
+    if (nameEl) nameEl.appendChild(label);
+  }
+
+  function removeLabel(task) {
+    var existing = task.querySelector('.pc-task-label');
+    if (existing) existing.remove();
+  }
+
+  function saveLabel(taskId, label) {
+    chrome.storage.local.get(['pcTaskLabels'], function(data) {
+      var labels = data.pcTaskLabels || {};
+      if (label) labels[taskId] = label;
+      else delete labels[taskId];
+      chrome.storage.local.set({ pcTaskLabels: labels });
+    });
+  }
+
+  function toggleCompletedTasks(hide) {
+    document.querySelectorAll('.pc-task-item').forEach(function(task) {
+      var checkbox = task.querySelector('input[type="checkbox"]');
+      if (checkbox && checkbox.checked) {
+        task.style.display = hide ? 'none' : '';
+      }
+    });
+  }
+
+  function formatDate(dateStr, use24hr) {
+    if (!dateStr) return '';
+    try {
+      var d = new Date(dateStr);
+      var now = new Date();
+      var diff = d - now;
+      var days = Math.floor(diff / 86400000);
+
+      // Relative date
+      var relative = '';
+      if (days < 0) relative = Math.abs(days) + 'd overdue';
+      else if (days === 0) relative = 'Today';
+      else if (days === 1) relative = 'Tomorrow';
+      else if (days < 7) relative = days + ' days left';
+      else relative = Math.floor(days / 7) + 'w left';
+
+      // Time
+      var timeStr = '';
+      if (use24hr) {
+        timeStr = d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
+      } else {
+        var h = d.getHours();
+        var ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        timeStr = h + ':' + d.getMinutes().toString().padStart(2, '0') + ' ' + ampm;
+      }
+
+      return relative + ' (' + timeStr + ')';
+    } catch(e) { return dateStr; }
+  }
+
+  // Run after task sidebar loads
+  var taskObserver = new MutationObserver(function() {
+    if (document.getElementById('pc-task-sidebar')) {
+      upgradeTaskSidebar();
+    }
+  });
+
+  if (document.getElementById('pc-task-sidebar')) {
+    setTimeout(upgradeTaskSidebar, 2500);
+  } else {
+    taskObserver.observe(document.body || document.documentElement, { childList: true, subtree: true });
+    setTimeout(function() { taskObserver.disconnect(); }, 30000);
+  }
+
+})();
