@@ -4329,3 +4329,196 @@ var PrettyGPA = {
     }
   });
 })();
+
+// ============ API FIXES (matching BetterCampus patterns) ============
+(function() {
+  'use strict';
+
+  // FIX 1: Better task fetching using /planner/items (like BetterCampus)
+  // Override getTodos to use planner API instead of todo API
+  if (typeof PrettyAPI !== 'undefined') {
+    var domain = window.location.origin;
+
+    // Better getTodos using planner/items
+    PrettyAPI.getTodosBetter = function(callback) {
+      // Get items from past week to 4 weeks ahead
+      var startDate = new Date();
+      startDate.setDate(startDate.getDate() - 7);
+      var endDate = new Date();
+      endDate.setDate(endDate.getDate() + 28);
+
+      var url = '/api/v1/planner/items?start_date=' + startDate.toISOString() + '&end_date=' + endDate.toISOString() + '&per_page=75';
+
+      fetch(domain + url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        credentials: 'same-origin'
+      })
+      .then(function(response) {
+        if (!response.ok) return null;
+        return response.json();
+      })
+      .then(function(data) {
+        if (!data || !Array.isArray(data)) {
+          // Fallback to original getTodos
+          if (PrettyAPI.getTodos) PrettyAPI.getTodos(callback);
+          return;
+        }
+
+        var todos = data.map(function(item) {
+          var assignment = item.plannable || {};
+          return {
+            id: 'planner-' + (item.plannable_id || Math.random()),
+            name: assignment.title || item.plannable_type || 'Untitled',
+            courseName: item.context_name || 'Course',
+            courseColor: '#7C3AED',
+            type: item.plannable_type || 'assignment',
+            dueDate: item.plannable_date || assignment.due_at || null,
+            points: assignment.points_possible || 0,
+            completed: item.planner_override ? item.planner_override.marked_complete : false,
+            overrideId: item.planner_override ? item.planner_override.id : null,
+            plannableId: item.plannable_id,
+            plannableType: item.plannable_type,
+            courseId: item.course_id
+          };
+        });
+
+        callback(null, todos);
+      })
+      .catch(function() {
+        if (PrettyAPI.getTodos) PrettyAPI.getTodos(callback);
+      });
+    };
+
+    // FIX 2: Mark task complete/incomplete synced with Canvas
+    PrettyAPI.markTaskComplete = function(task, completed, callback) {
+      var method = 'POST';
+      var url = domain + '/api/v1/planner/overrides';
+      var body = {
+        plannable_type: task.plannableType || 'assignment',
+        plannable_id: task.plannableId,
+        marked_complete: completed
+      };
+
+      // If override already exists, use PUT to update it
+      if (task.overrideId) {
+        method = 'PUT';
+        url = domain + '/api/v1/planner/overrides/' + task.overrideId;
+        body = { marked_complete: completed };
+      }
+
+      fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify(body)
+      })
+      .then(function(response) { return response.json(); })
+      .then(function(data) {
+        if (callback) callback(null, data);
+      })
+      .catch(function(err) {
+        // Save locally as fallback
+        console.log('Pretty Campus: Planner override failed, saving locally');
+        if (callback) callback(err, null);
+      });
+    };
+
+    // FIX 3: Better grade extraction with grading periods (like BetterCampus)
+    PrettyAPI.getCoursesBetter = function(callback) {
+      var url = '/api/v1/courses?include[]=total_scores&include[]=computed_current_score&include[]=current_grading_period_scores&per_page=100';
+
+      fetch(domain + url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        credentials: 'same-origin'
+      })
+      .then(function(response) {
+        if (!response.ok) return null;
+        return response.json();
+      })
+      .then(function(data) {
+        if (!data || !Array.isArray(data)) {
+          if (PrettyAPI.getCourses) PrettyAPI.getCourses(callback);
+          return;
+        }
+
+        // Also fetch course colors
+        fetch(domain + '/api/v1/users/self/colors', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          credentials: 'same-origin'
+        })
+        .then(function(r) { return r.ok ? r.json() : {}; })
+        .then(function(colorData) {
+          var colors = (colorData && colorData.custom_colors) || {};
+          var defaultColors = ['#7C3AED', '#059669', '#F59E0B', '#EC4899', '#3B82F6', '#EF4444', '#8B5CF6', '#06B6D4'];
+
+          var courses = data.filter(function(c) {
+            var enrollment = (c.enrollments && c.enrollments[0]) || {};
+            return enrollment.type === 'student' || enrollment.enrollment_state === 'active';
+          }).map(function(c, i) {
+            var enrollment = (c.enrollments && c.enrollments[0]) || {};
+
+            // FIX 3: Grading periods check (exactly like BetterCampus)
+            var grade;
+            if (enrollment.has_grading_periods === true) {
+              grade = enrollment.current_period_computed_current_score || enrollment.computed_current_score || 0;
+            } else {
+              grade = enrollment.computed_current_score || enrollment.computed_final_score || 0;
+            }
+
+            // Use Canvas course colors if available
+            var courseColor = colors['course_' + c.id] || defaultColors[i % defaultColors.length];
+
+            return {
+              id: c.id,
+              name: c.course_code || c.name || 'Course',
+              title: c.name || '',
+              credits: 3,
+              percentage: grade,
+              color: courseColor,
+              enrollmentType: enrollment.type || 'student',
+              hasGradingPeriods: enrollment.has_grading_periods || false
+            };
+          });
+
+          if (courses.length === 0) {
+            if (PrettyAPI.getCourses) PrettyAPI.getCourses(callback);
+            return;
+          }
+
+          callback(null, courses);
+        })
+        .catch(function() {
+          if (PrettyAPI.getCourses) PrettyAPI.getCourses(callback);
+        });
+      })
+      .catch(function() {
+        if (PrettyAPI.getCourses) PrettyAPI.getCourses(callback);
+      });
+    };
+
+    // Replace original functions with better versions
+    var origGetCourses = PrettyAPI.getCourses;
+    var origGetTodos = PrettyAPI.getTodos;
+
+    PrettyAPI.getCourses = function(callback) {
+      if (PrettyAPI.isDevMode && PrettyAPI.isDevMode()) {
+        origGetCourses(callback);
+        return;
+      }
+      PrettyAPI.getCoursesBetter(callback);
+    };
+
+    PrettyAPI.getTodos = function(callback) {
+      if (PrettyAPI.isDevMode && PrettyAPI.isDevMode()) {
+        origGetTodos(callback);
+        return;
+      }
+      PrettyAPI.getTodosBetter(callback);
+    };
+
+    console.log('Pretty Campus: API upgraded (planner items + grading periods + course colors)');
+  }
+})();
