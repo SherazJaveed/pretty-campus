@@ -5177,3 +5177,118 @@ var PrettyGPA = {
   setTimeout(function() { dashObserver.disconnect(); }, 30000);
 
 })();
+
+// ============ REMAINING FEATURES FIX ============
+// 1. Custom CSS injection
+// 2. Full-width mode
+// 3. Disable color overlay
+// 4. Changelog/update message
+(function() {
+  'use strict';
+
+  chrome.storage.local.get(['pcCustomCSS', 'pcFullWidth', 'pcNoOverlay', 'pcVersion'], function(data) {
+
+    // 1. CUSTOM CSS INJECTION
+    if (data.pcCustomCSS && data.pcCustomCSS.trim()) {
+      var customStyle = document.getElementById('pc-custom-css') || document.createElement('style');
+      customStyle.id = 'pc-custom-css';
+      customStyle.textContent = data.pcCustomCSS;
+      document.documentElement.appendChild(customStyle);
+    }
+
+    // 2. FULL-WIDTH MODE
+    if (data.pcFullWidth) {
+      var fwStyle = document.getElementById('pc-fullwidth-css') || document.createElement('style');
+      fwStyle.id = 'pc-fullwidth-css';
+      fwStyle.textContent = '.ic-Layout-wrapper { max-width: 100% !important; } #wrapper { max-width: 100% !important; } #content { max-width: 100% !important; padding: 0 24px !important; }';
+      document.documentElement.appendChild(fwStyle);
+    }
+
+    // 3. DISABLE COLOR OVERLAY ON CARDS
+    if (data.pcNoOverlay) {
+      var noOverlay = document.getElementById('pc-no-overlay-css') || document.createElement('style');
+      noOverlay.id = 'pc-no-overlay-css';
+      noOverlay.textContent = '.ic-DashboardCard__header_hero { opacity: 0 !important; } .ic-DashboardCard__header-button-bg { opacity: 1 !important; }';
+      document.documentElement.appendChild(noOverlay);
+    }
+
+    // 4. UPDATE/CHANGELOG MESSAGE
+    var currentVersion = '3.6.0';
+    if (data.pcVersion !== currentVersion) {
+      chrome.storage.local.set({ pcVersion: currentVersion });
+      // Show update toast on dashboard only
+      if (window.location.pathname === '/' || window.location.pathname === '') {
+        setTimeout(function() {
+          showUpdateToast(currentVersion);
+        }, 3000);
+      }
+    }
+  });
+
+  function showUpdateToast(version) {
+    var toast = document.createElement('div');
+    toast.id = 'pc-update-toast';
+    toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-20px);background:linear-gradient(135deg,#7C3AED,#6D28D9);color:white;padding:14px 24px;border-radius:14px;font-size:14px;z-index:999999;opacity:0;transition:all 0.4s;font-family:-apple-system,sans-serif;box-shadow:0 8px 32px rgba(124,58,237,0.4);max-width:400px;text-align:center;';
+    toast.innerHTML =
+      '<div style="font-weight:700;font-size:16px;margin-bottom:4px;">Pretty Campus Updated! 🎉</div>' +
+      '<div style="opacity:0.85;font-size:12px;">v' + version + ' — Improved dark mode, GPA calculator, task sidebar & dashboard cards.</div>' +
+      '<button id="pcDismissUpdate" style="margin-top:8px;background:rgba(255,255,255,0.2);border:none;color:white;padding:4px 16px;border-radius:8px;font-size:12px;cursor:pointer;">Got it!</button>';
+    document.body.appendChild(toast);
+
+    setTimeout(function() {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+    }, 100);
+
+    document.getElementById('pcDismissUpdate').addEventListener('click', function() {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(-50%) translateY(-20px)';
+      setTimeout(function() { toast.remove(); }, 400);
+    });
+
+    // Auto-dismiss after 8 seconds
+    setTimeout(function() {
+      if (document.getElementById('pc-update-toast')) {
+        toast.style.opacity = '0';
+        setTimeout(function() { toast.remove(); }, 400);
+      }
+    }, 8000);
+  }
+
+  // Listen for settings changes from popup
+  chrome.runtime.onMessage.addListener(function(req) {
+    if (req.action === 'setCustomCSS') {
+      chrome.storage.local.set({ pcCustomCSS: req.css });
+      var el = document.getElementById('pc-custom-css') || document.createElement('style');
+      el.id = 'pc-custom-css';
+      el.textContent = req.css;
+      document.documentElement.appendChild(el);
+    }
+    if (req.action === 'toggleFullWidth') {
+      chrome.storage.local.set({ pcFullWidth: req.enabled });
+      var fw = document.getElementById('pc-fullwidth-css');
+      if (req.enabled && !fw) {
+        fw = document.createElement('style');
+        fw.id = 'pc-fullwidth-css';
+        fw.textContent = '.ic-Layout-wrapper{max-width:100%!important}#wrapper{max-width:100%!important}#content{max-width:100%!important;padding:0 24px!important}';
+        document.documentElement.appendChild(fw);
+      } else if (!req.enabled && fw) {
+        fw.remove();
+      }
+    }
+    if (req.action === 'toggleOverlay') {
+      chrome.storage.local.set({ pcNoOverlay: req.enabled });
+      var ov = document.getElementById('pc-no-overlay-css');
+      if (req.enabled && !ov) {
+        ov = document.createElement('style');
+        ov.id = 'pc-no-overlay-css';
+        ov.textContent = '.ic-DashboardCard__header_hero{opacity:0!important}.ic-DashboardCard__header-button-bg{opacity:1!important}';
+        document.documentElement.appendChild(ov);
+      } else if (!req.enabled && ov) {
+        ov.remove();
+      }
+    }
+    return true;
+  });
+
+})();
