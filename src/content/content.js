@@ -5007,3 +5007,173 @@ var PrettyGPA = {
   }
 
 })();
+
+// ============ DASHBOARD CARDS UPGRADE ============
+// Adds: grade on cards, custom names, hide courses, auto-gradient,
+// assignments preview on cards
+(function() {
+  'use strict';
+
+  function upgradeDashboard() {
+    // Wait for Canvas to render dashboard cards
+    var cards = document.querySelectorAll('.ic-DashboardCard');
+    if (cards.length === 0) return;
+
+    chrome.storage.local.get(['pcCardSettings', 'pcGradeOnCards'], function(data) {
+      var settings = data.pcCardSettings || {};
+      var showGrades = data.pcGradeOnCards !== false; // default ON
+
+      // Get grades from API
+      if (typeof PrettyAPI !== 'undefined' && PrettyAPI.getCourses) {
+        PrettyAPI.getCourses(function(err, courses) {
+          if (!courses) courses = [];
+
+          cards.forEach(function(card) {
+            var linkEl = card.querySelector('.ic-DashboardCard__link');
+            if (!linkEl) return;
+            var href = linkEl.href || '';
+            var courseIdMatch = href.match(/courses\/(\d+)/);
+            if (!courseIdMatch) return;
+            var courseId = courseIdMatch[1];
+            var cardSettings = settings[courseId] || {};
+
+            // 1. GRADE ON CARD HEADER
+            if (showGrades && !card.querySelector('.pc-card-grade')) {
+              var course = courses.find(function(c) { return String(c.id) === courseId; });
+              if (course && course.percentage > 0) {
+                var gradeEl = document.createElement('a');
+                gradeEl.className = 'pc-card-grade';
+                gradeEl.href = href.split('?')[0] + '/grades';
+                gradeEl.textContent = course.percentage + '%';
+                gradeEl.style.cssText = 'position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.6);color:white;padding:4px 10px;border-radius:12px;font-size:13px;font-weight:700;text-decoration:none;z-index:5;backdrop-filter:blur(4px);transition:all 0.2s;';
+                gradeEl.addEventListener('mouseenter', function() { gradeEl.style.background = 'rgba(124,58,237,0.8)'; });
+                gradeEl.addEventListener('mouseleave', function() { gradeEl.style.background = 'rgba(0,0,0,0.6)'; });
+                var header = card.querySelector('.ic-DashboardCard__header');
+                if (header) {
+                  header.style.position = 'relative';
+                  header.appendChild(gradeEl);
+                }
+              }
+            }
+
+            // 2. HIDE COURSE
+            if (cardSettings.hidden) {
+              card.style.display = 'none';
+              return;
+            }
+
+            // 3. CUSTOM NAME
+            if (cardSettings.customName) {
+              var titleEl = card.querySelector('.ic-DashboardCard__header-title span');
+              if (titleEl) titleEl.textContent = cardSettings.customName;
+            }
+
+            // 4. CUSTOM SUBTITLE/CODE
+            if (cardSettings.customCode) {
+              var subtitleEl = card.querySelector('.ic-DashboardCard__header-subtitle');
+              if (subtitleEl) subtitleEl.textContent = cardSettings.customCode;
+            }
+
+            // 5. AUTO-GRADIENT from course color
+            if (!card.dataset.gradientApplied) {
+              card.dataset.gradientApplied = 'true';
+              var heroEl = card.querySelector('.ic-DashboardCard__header_hero');
+              if (heroEl && heroEl.style.backgroundColor) {
+                var rgb = heroEl.style.backgroundColor;
+                var match = rgb.match(/(\d+),\s*(\d+),\s*(\d+)/);
+                if (match) {
+                  var r = parseInt(match[1]), g = parseInt(match[2]), b = parseInt(match[3]);
+                  var hsl = rgbToHsl(r, g, b);
+                  var h = hsl[0], s = hsl[1], l = hsl[2];
+                  var shift = ((h % 60) / 60) >= 0.66 ? 30 : ((h % 60) / 60) <= 0.33 ? -30 : 15;
+                  var newH = h > 300 ? (360 - (h + 65)) + (65 + shift) : h + 65 + shift;
+                  heroEl.style.background = 'linear-gradient(115deg, hsl(' + h + 'deg,' + s + '%,' + l + '%) 5%, hsl(' + newH + 'deg,' + s + '%,' + l + '%) 100%)';
+                }
+              }
+            }
+
+            // 6. NEXT ASSIGNMENT PREVIEW on card
+            if (!card.querySelector('.pc-card-assignment') && typeof PrettyAPI !== 'undefined') {
+              var course2 = courses.find(function(c) { return String(c.id) === courseId; });
+              if (course2) {
+                showNextAssignment(card, courseId);
+              }
+            }
+          });
+        });
+      }
+    });
+  }
+
+  function showNextAssignment(card, courseId) {
+    var domain = window.location.origin;
+    fetch(domain + '/api/v1/courses/' + courseId + '/assignments?order_by=due_at&per_page=5&bucket=upcoming', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      credentials: 'same-origin'
+    })
+    .then(function(r) { return r.ok ? r.json() : []; })
+    .then(function(assignments) {
+      if (!assignments || assignments.length === 0) return;
+      var next = assignments[0];
+      if (!next.name) return;
+
+      var preview = document.createElement('div');
+      preview.className = 'pc-card-assignment';
+      preview.style.cssText = 'padding:4px 12px;font-size:11px;color:#6B7280;border-top:1px solid rgba(0,0,0,0.1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+
+      var dueText = '';
+      if (next.due_at) {
+        var due = new Date(next.due_at);
+        var now = new Date();
+        var days = Math.ceil((due - now) / 86400000);
+        if (days < 0) dueText = ' · overdue';
+        else if (days === 0) dueText = ' · today';
+        else if (days === 1) dueText = ' · tomorrow';
+        else if (days < 7) dueText = ' · ' + days + 'd';
+        else dueText = ' · ' + Math.floor(days / 7) + 'w';
+      }
+
+      preview.textContent = '📋 ' + next.name + dueText;
+      card.querySelector('.ic-DashboardCard__body, .ic-DashboardCard__action-container')
+        ? card.querySelector('.ic-DashboardCard__body, .ic-DashboardCard__action-container').parentNode.insertBefore(preview, card.querySelector('.ic-DashboardCard__action-container'))
+        : card.appendChild(preview);
+    })
+    .catch(function() {});
+  }
+
+  // RGB to HSL helper (our own implementation)
+  function rgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+    var h, s, l = (max + min) / 2;
+    if (max === min) { h = s = 0; }
+    else {
+      var d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch(max) {
+        case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+        case g: h = ((b - r) / d + 2) / 6; break;
+        case b: h = ((r - g) / d + 4) / 6; break;
+      }
+    }
+    return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+  }
+
+  // Run after dashboard loads
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(upgradeDashboard, 3000); });
+  } else {
+    setTimeout(upgradeDashboard, 3000);
+  }
+
+  // Also watch for dashboard cards appearing
+  var dashObserver = new MutationObserver(function() {
+    if (document.querySelector('.ic-DashboardCard')) {
+      upgradeDashboard();
+    }
+  });
+  dashObserver.observe(document.body || document.documentElement, { childList: true, subtree: true });
+  setTimeout(function() { dashObserver.disconnect(); }, 30000);
+
+})();
